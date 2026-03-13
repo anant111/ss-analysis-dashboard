@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Personas — Excl. Top Leaders</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f13; color: #e8e8f0; line-height: 1.6; padding: 24px; }
+
+  .nav { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; align-items: center; }
+  .nav a { font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 6px; text-decoration: none; border: 1px solid #2a2a3a; color: #a0a0b8; }
+  .nav a.active { background: #252530; color: #e8e8f0; border-color: #3a3a4a; }
+  .nav a:hover { color: #e8e8f0; }
+  .nav-label { font-size: 11px; color: #374151; padding-right: 4px; }
+  .nav-divider { width: 1px; height: 24px; background: #2a2a3a; margin: 0 6px; }
+
+  h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px;
+    background: linear-gradient(135deg, #34d399, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 28px; }
+
+  .section-header { display:flex; align-items:center; gap:14px; margin-bottom:18px; margin-top:36px; }
+  .section-header:first-of-type { margin-top:0; }
+  .section-badge { font-size:11px; font-weight:600; padding:4px 12px; border-radius:99px; white-space:nowrap; }
+  .section-line { flex:1; height:1px; background:#2a2a3a; }
+  .section-count { font-size:12px; color:#4b5563; white-space:nowrap; }
+
+  .persona-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; margin-bottom:12px; }
+
+  .persona-card { background:#1a1a24; border:1px solid #2a2a3a; border-radius:14px; padding:20px; position:relative; overflow:hidden; }
+  .persona-card::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; border-radius:14px 14px 0 0; }
+
+  .card-teal::before    { background:linear-gradient(90deg,#0d9488,#2dd4bf); }
+  .card-pink::before    { background:linear-gradient(90deg,#db2777,#f472b6); }
+  .card-amber::before   { background:linear-gradient(90deg,#d97706,#fbbf24); }
+  .card-green::before   { background:linear-gradient(90deg,#059669,#34d399); }
+  .card-purple::before  { background:linear-gradient(90deg,#7c3aed,#a78bfa); }
+  .card-orange::before  { background:linear-gradient(90deg,#ea580c,#fb923c); }
+  .card-blue::before    { background:linear-gradient(90deg,#1d4ed8,#60a5fa); }
+  .card-fuchsia::before { background:linear-gradient(90deg,#a21caf,#e879f9); }
+  .card-lime::before    { background:linear-gradient(90deg,#4d7c0f,#a3e635); }
+  .card-sky::before     { background:linear-gradient(90deg,#0369a1,#38bdf8); }
+  .card-rose::before    { background:linear-gradient(90deg,#e11d48,#fb7185); }
+  .card-indigo::before  { background:linear-gradient(90deg,#4338ca,#818cf8); }
+  .card-yellow::before  { background:linear-gradient(90deg,#ca8a04,#facc15); }
+  .card-emerald::before { background:linear-gradient(90deg,#047857,#10b981); }
+  .card-cyan::before    { background:linear-gradient(90deg,#0e7490,#22d3ee); }
+
+  .persona-top { display:flex; align-items:flex-start; gap:14px; margin-bottom:14px; }
+  .persona-avatar { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+  .persona-meta { flex:1; }
+  .persona-name { font-size:15px; font-weight:700; color:#e8e8f0; margin-bottom:2px; }
+  .persona-tagline { font-size:11px; color:#6b7280; font-style:italic; }
+
+  .persona-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .pstat { background:#252530; border-radius:8px; padding:8px 10px; }
+  .pstat-label { font-size:10px; color:#4b5563; text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
+  .pstat-val { font-size:14px; font-weight:700; }
+  .pstat-delta { font-size:10px; margin-top:2px; }
+  .pstat-delta.down { color:#f87171; } .pstat-delta.up { color:#86efac; } .pstat-delta.same { color:#6b7280; }
+
+  .persona-section { margin-bottom:12px; }
+  .persona-section-title { font-size:10px; color:#4b5563; text-transform:uppercase; letter-spacing:.07em; margin-bottom:7px; font-weight:600; }
+
+  .chip-list { display:flex; flex-wrap:wrap; gap:5px; }
+  .chip { font-size:11px; padding:3px 9px; border-radius:99px; background:#252530; color:#a0a0b8; border:1px solid #2a2a3a; white-space:nowrap; }
+
+  .motivation-text { font-size:12px; color:#9ca3af; line-height:1.55; }
+  .motivation-text strong { color:#e8e8f0; }
+
+  .signal-list { display:flex; flex-direction:column; gap:4px; }
+  .signal-item { display:flex; align-items:baseline; gap:6px; font-size:11px; color:#6b7280; }
+  .signal-item::before { content:'→'; color:#374151; flex-shrink:0; }
+  .signal-item span { color:#9ca3af; }
+
+  .diff-badge { display:inline-flex; align-items:center; gap:3px; font-size:10px; padding:1px 7px; border-radius:99px; margin-left:4px; }
+  .diff-badge.new    { background:#052e16; color:#86efac; }
+  .diff-badge.down   { background:#3f1010; color:#f87171; }
+  .diff-badge.same   { background:#1c1c2e; color:#6b7280; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-label">All paid:</span>
+  <a href="insights.html">Insights</a>
+  <a href="personas.html">Personas</a>
+  <div class="nav-divider"></div>
+  <span class="nav-label">Excl. top leaders:</span>
+  <a href="insights_no_leaders.html">Insights</a>
+  <a href="personas_no_leaders.html" class="active">Personas</a>
+</div>
+
+<h1>User Personas — Excl. Top Leaders</h1>
+<p class="subtitle">Source: Book3_removing_top_leaders.csv · 5 personas each for Course buyers, 1-on-1 bookers, and overlap users.</p>
+
+
+<!-- ═══ COURSE PERSONAS ═══ -->
+<div class="section-header">
+  <div class="section-badge" style="background:#042f2e;color:#2dd4bf">Course Buyers — Excl. Top Leaders</div>
+  <div class="section-line"></div>
+  <div class="section-count">12,575 users · avg 1.97 courses each</div>
+</div>
+
+<div class="persona-grid">
+
+  <!-- 1: The Soul Healer -->
+  <div class="persona-card card-pink">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#4c0519">🌿</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Soul Healer <span class="diff-badge new">↑ grew</span></div>
+        <div class="persona-tagline">"Something in me needs to be released — I can feel it."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#f472b6">4,037</div><div class="pstat-delta up">Now #1 theme</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#f472b6">2.0</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Restore Your Gut Energy Flow</span>
+        <span class="chip">Karma</span>
+        <span class="chip">Cords and Cleansing Ritual</span>
+        <span class="chip">Chakra Harmony for Inner Healing</span>
+        <span class="chip">Learning Emotional & Karmic Cleansing</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">This is the community's <strong>core buyer without any creator influence</strong>. They're dealing with persistent physical and emotional blockages and believe healing them at an energetic or karmic level is the solution. They co-buy across body (gut, chakras) and soul (karma, cords) work — holistic, integrated healing.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Largest organic segment — not amplified by any top leader</span></div>
+        <div class="signal-item"><span>Consistent 2.0 avg courses — methodical, multi-step buyers</span></div>
+        <div class="signal-item"><span>Best candidate for structured healing programs (3–6 weeks)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2: The Grounded Manifestor -->
+  <div class="persona-card card-amber">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#451a03">🌱</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Grounded Manifestor <span class="diff-badge down">↓ shifted</span></div>
+        <div class="persona-tagline">"I want abundance, but through depth — not hype."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#fbbf24">1,906</div><div class="pstat-delta down">Was #1 in full paid</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#fbbf24">1.8</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Healing The Money Wound</span>
+        <span class="chip">Manifesting Miracles with Hermetics</span>
+        <span class="chip">Crorepati DNA Activation Codes</span>
+        <span class="chip">Akashic Money Activation</span>
+        <span class="chip">Hand Mudras for Energy Alignment</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Without top-leader course influence (Manifest Like A Millionaire, Energy Numbers), the remaining manifestation buyers gravitate toward <strong>deeper, more esoteric approaches</strong> — hermetics, DNA activation, akashic money codes. They're serious practitioners, not aspirational buyers driven by marketing.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Lower avg courses (1.8) — more selective, higher intent per purchase</span></div>
+        <div class="signal-item"><span>Interested in the "why behind the how" — metaphysical frameworks</span></div>
+        <div class="signal-item"><span>Strong overlap with healing — address the money wound first</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: The Devotional Practitioner -->
+  <div class="persona-card card-orange">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#431407">🪔</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Devotional Practitioner <span class="diff-badge same">= stable</span></div>
+        <div class="persona-tagline">"My practice is my foundation. I return to it every day."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#fb923c">1,779</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#fb923c">1.7</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Hanuman Sadhana & Naamjap</span>
+        <span class="chip">Chant Gayatri Mantra</span>
+        <span class="chip">Prosperity & Inner Strength</span>
+        <span class="chip">Understanding Death & Beyond</span>
+        <span class="chip">Kamakhya Shakti Sadhana</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">This persona is almost unchanged — it's a <strong>fundamentally stable, creator-independent segment</strong>. Their buying is driven by devotional rhythm and cultural identity, not by which leaders are popular. Kamakhya Shakti Sadhana is a new entrant here, pointing to emerging Shakti/Tantric devotional interest.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Largely unchanged from full paid dataset — true organic buyers</span></div>
+        <div class="signal-item"><span>Expanding into Shakti/Tantric traditions beyond Vaishnavism</span></div>
+        <div class="signal-item"><span>Respond to festival-timed and sacred calendar launches</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: The Somatic Regulator -->
+  <div class="persona-card card-teal">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#042f2e">🫁</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Somatic Regulator <span class="diff-badge new">↑ clearer signal</span></div>
+        <div class="persona-tagline">"My body holds the stress my mind can't let go of."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#2dd4bf">1,635</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#2dd4bf">1.8</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Breathe</span>
+        <span class="chip">Tap (EFT)</span>
+        <span class="chip">Release: A Stress Reset Program</span>
+        <span class="chip">Voice-based Tools for Nervous Balance</span>
+        <span class="chip">Breathe Into Deep Sleep</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">More clearly visible now that top-leader courses don't crowd the data. They're buying <strong>body-first, breath-first tools</strong> for sleep, stress, and nervous system reset. Voice-based nervous balance is a meaningful crossover with the Voice & Sound Healing niche. They want practice, not theory.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Organic demand — not driven by any one creator or course</span></div>
+        <div class="signal-item"><span>Co-buys across breathwork, EFT, sleep, and voice tools</span></div>
+        <div class="signal-item"><span>High crossover with anxiety-release 1-on-1 sessions</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5: The Psychic Initiate -->
+  <div class="persona-card card-blue">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#1e3a5f">🌠</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Psychic Initiate <span class="diff-badge new">↑ new clarity</span></div>
+        <div class="persona-tagline">"I sense things others don't. I want to understand that."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#60a5fa">252</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#60a5fa">1.6</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Awaken Your Psychic Abilities</span>
+        <span class="chip">The Advait-Vedanta Way to Intuitive Living</span>
+        <span class="chip">Discover Your Strength With Spirit Animals</span>
+        <span class="chip">Discover Your Life Path with Tarot</span>
+        <span class="chip">Full Moon Circle: Tarot & Meditation</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Now visible as a standalone segment with top leaders removed. They're not buying readings — they're <strong>developing their own intuitive and psychic capabilities</strong>. The Vedanta-to-intuition link is noteworthy: they want philosophical grounding for their experiences, not just technique.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Hidden by top-leader data before — genuine demand signal</span></div>
+        <div class="signal-item"><span>Philosophical + practical blend: Vedanta + tarot + spirit animals</span></div>
+        <div class="signal-item"><span>Pipeline to future practitioners — high engagement, self-directed</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══ 1-ON-1 PERSONAS ═══ -->
+<div class="section-header">
+  <div class="section-badge" style="background:#064e3b;color:#6ee7b7">1-on-1 Bookers — Excl. Top Leaders</div>
+  <div class="section-line"></div>
+  <div class="section-count">1,921 users · avg 1.27 sessions · nearly unchanged from full paid</div>
+</div>
+
+<div class="persona-grid">
+
+  <!-- 1 -->
+  <div class="persona-card card-indigo">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#1e1b4b">🔮</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Fortune Seeker <span class="diff-badge same">= unchanged</span></div>
+        <div class="persona-tagline">"The cards will tell me what I need to know right now."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#818cf8">632</div><div class="pstat-delta up">▲ 60 vs full paid</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#818cf8">49%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Tarot Card Reading</span>
+        <span class="chip">Psychic Tarot Card Reading</span>
+        <span class="chip">Angel Guidance</span>
+        <span class="chip">Connect With Your Spirit Team</span>
+        <span class="chip">Psychic Reading</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Completely <strong>leader-independent demand</strong> — this segment grew slightly with top leaders removed. They're seeking personalised guidance for decisions, relationships, and timing. The reading is their oracle. High repeat-booking potential when matched with the right reader.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Now 49% of 1-on-1 market — largest and most stable segment</span></div>
+        <div class="signal-item"><span>Often arrives without any course purchase — direct booking intent</span></div>
+        <div class="signal-item"><span>Repeat-books when a practitioner builds rapport</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="persona-card card-fuchsia">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#4a044e">🌌</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Soul Excavator <span class="diff-badge up">↑ stronger signal</span></div>
+        <div class="persona-tagline">"I need to understand what my soul is working through."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#e879f9">356</div><div class="pstat-delta up">▲ 53 vs full paid</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#e879f9">28%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Akashic Record Reading</span>
+        <span class="chip">Soul Purpose Plan</span>
+        <span class="chip">Karmic & Spiritual Healing Plan</span>
+        <span class="chip">Reiki Healing</span>
+        <span class="chip">Akashic Records Readings</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">This segment grew more than any other in 1-on-1 when top leaders are removed. With manifestation noise gone, <strong>soul-level healing and purpose work is clearly the true #2 service demand</strong>. These buyers want deep, comprehensive personal exploration, not surface readings.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>High willingness to pay — buys longer, premium-format sessions</span></div>
+        <div class="signal-item"><span>Likely to book follow-ups for continued healing work</span></div>
+        <div class="signal-item"><span>Resonates with practitioner story and credentials over price</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="persona-card card-sky">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#082f49">⭐</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Cosmic Navigator <span class="diff-badge same">= stable</span></div>
+        <div class="persona-tagline">"My chart is my roadmap. I consult it before major decisions."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#38bdf8">123</div><div class="pstat-delta up">▲ 10 vs full paid</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#38bdf8">10%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Birth Chart Analysis</span>
+        <span class="chip">Wrist Watch Astrology</span>
+        <span class="chip">Vedic Numerology Blueprint</span>
+        <span class="chip">Soul Purpose Plan</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Analytically spiritual. Uses <strong>astrology and numerology as a structured decision support system</strong> — understanding personality, timing career moves, and planning life milestones. Their behaviour is consistent regardless of which leaders are on the platform, confirming this is pure user demand.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Returns for annual or transit readings — natural subscription model</span></div>
+        <div class="signal-item"><span>Combines Vedic and Western approaches — breadth-seeker</span></div>
+        <div class="signal-item"><span>Responds to structured session formats with written reports</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="persona-card card-lime">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#1a2e05">🐾</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Animal Whisperer <span class="diff-badge up">↑ slightly larger</span></div>
+        <div class="persona-tagline">"I need to know what my animal companion is experiencing."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#a3e635">95</div><div class="pstat-delta up">▲ 3 vs full paid</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#a3e635">7%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Animal Telepathy</span>
+        <span class="chip">Tarot & Lenormand Reading</span>
+        <span class="chip">Birth Chart Analysis</span>
+        <span class="chip">Psychic Tarot Card Reading</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Persistent, loyal, and completely <strong>underserved by the course catalogue</strong>. Their demand for Animal Telepathy sessions is independent of all leader dynamics — it's pure user pull. They cross-book tarot and birth chart sessions too, showing they're spiritually curious beyond just animal communication.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>95 paid sessions with zero matching course supply — clear gap</span></div>
+        <div class="signal-item"><span>Also books general spiritual readings — broader curiosity</span></div>
+        <div class="signal-item"><span>Course opportunity: animal communication foundations course</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="persona-card card-green">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#022c22">🌊</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Anxiety Releaser <span class="diff-badge same">= consistent</span></div>
+        <div class="persona-tagline">"I've tried other things. I need something that works on my body."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#34d399">77</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#34d399">6%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Release Anxiety with Breathwork</span>
+        <span class="chip">Theta Healing</span>
+        <span class="chip">Hypnotherapy</span>
+        <span class="chip">NLP to Break Addiction</span>
+        <span class="chip">Face Yoga</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">A <strong>therapeutic wellness buyer</strong> who has moved beyond conventional options and is exploring holistic modalities for anxiety, stress, and habitual patterns. Theta healing and NLP are new entrants in this segment vs. full paid data — more clinically oriented methods emerging.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>NLP and Theta healing signal higher therapeutic sophistication</span></div>
+        <div class="signal-item"><span>Often arrives via recommendation — trust-dependent purchase</span></div>
+        <div class="signal-item"><span>Crossover with somatic course buyers (Breathe, Tap segments)</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══ OVERLAP PERSONAS ═══ -->
+<div class="section-header">
+  <div class="section-badge" style="background:#422006;color:#fcd34d">Course + 1-on-1 (Overlap) — Excl. Top Leaders</div>
+  <div class="section-line"></div>
+  <div class="section-count">592 users · 4.3% of active · healing now dominates both channels</div>
+</div>
+
+<div class="persona-grid">
+
+  <!-- 1 -->
+  <div class="persona-card card-rose">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#4c0519">🕊️</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Full-Stack Healer <span class="diff-badge up">↑ clearer profile</span></div>
+        <div class="persona-tagline">"I use every tool available to go deeper into my healing."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#fb7185">266</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#fb7185">45%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Restore Your Gut Energy Flow</span>
+        <span class="chip">Hanuman Sadhana</span>
+        <span class="chip">Voice Activation for Inner Clarity</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Akashic Record Reading</span>
+        <span class="chip">Soul Purpose Plan</span>
+        <span class="chip">Karmic & Spiritual Healing Plan</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">The platform's highest-engagement buyer. They combine body-based and devotional course work with deep soul-level 1-on-1 sessions. The key shift from full paid: their <strong>course mix is more diverse and body-inclusive</strong> (gut healing, voice work alongside spirituality), while their sessions remain anchored in akashic and karmic healing.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Multi-dimension approach: body + soul + voice + spirituality</span></div>
+        <div class="signal-item"><span>Not driven by creator popularity — buys on alignment with need</span></div>
+        <div class="signal-item"><span>Ideal membership candidate — recurring course + session buyer</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="persona-card card-yellow">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#422006">🌾</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Spiritual Money Worker <span class="diff-badge new">↑ new profile</span></div>
+        <div class="persona-tagline">"I'm healing my relationship with money at the soul level."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#facc15">73</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#facc15">12%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Akashic Money Activation</span>
+        <span class="chip">Crorepati DNA Activation Codes</span>
+        <span class="chip">Chant Gayatri Mantra</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Birth Chart Analysis</span>
+        <span class="chip">Akashic Record Reading</span>
+        <span class="chip">Karmic & Spiritual Healing Plan</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">A distinct profile not visible in full paid data. These users take <strong>esoteric money activation courses</strong> (akashic, DNA codes) and pair them with personalised akashic records and birth chart sessions to understand their financial karma. Deeply integrative approach to wealth work.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Unique to this dataset — masked by top-leader manifestation courses before</span></div>
+        <div class="signal-item"><span>Combines group activation + personal chart work</span></div>
+        <div class="signal-item"><span>Wants a comprehensive money karma healing arc, not a quick fix</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="persona-card card-orange">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#431407">🌺</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Devotional Soul Seeker <span class="diff-badge same">= stable</span></div>
+        <div class="persona-tagline">"My practice is deep. I want a guide who understands that depth."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#fb923c">66</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#fb923c">11%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Hanuman Sadhana & Naamjap</span>
+        <span class="chip">Chant Gayatri Mantra</span>
+        <span class="chip">Prosperity & Inner Strength</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Karmic & Spiritual Healing Plan</span>
+        <span class="chip">Birth Chart Analysis</span>
+        <span class="chip">Soul Purpose Plan</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Devotional practice grounds them; personalised healing sessions deepen it. They're not just seekers — they're <strong>disciplined practitioners who want guidance calibrated to their tradition</strong>. Birth Chart Analysis and Soul Purpose Plan are selected because they trust that practitioner understands the Indian cosmological framework they live within.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Responds strongly to practitioners from the same cultural background</span></div>
+        <div class="signal-item"><span>Buys sessions that honour their tradition — Vedic over Western</span></div>
+        <div class="signal-item"><span>Long-term loyalty if the right practitioner match is made</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="persona-card card-teal">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#042f2e">🌬️</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Mind-Body Bridge <span class="diff-badge new">↑ newly visible</span></div>
+        <div class="persona-tagline">"Breathwork opened the door. Now I want to know what's behind it."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#2dd4bf">64</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#2dd4bf">11%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Breathe With Prameet</span>
+        <span class="chip">Natural Glow with Face Yoga</span>
+        <span class="chip">Voice-based Tools for Nervous Balance</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Psychic Tarot Card Reading</span>
+        <span class="chip">Release Anxiety with Breathwork</span>
+        <span class="chip">Birth Chart Analysis</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">They enter through the body — breathwork and face yoga — and use 1-on-1 sessions to <strong>bridge into deeper spiritual inquiry</strong>. Tarot and birth chart readings are their gateway to meaning-making. This is a new, previously hidden overlap persona that emerges when top-creator content is stripped out.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Body-first entry; spiritual sessions complete the journey</span></div>
+        <div class="signal-item"><span>Not visible in full paid data — unique to broader community</span></div>
+        <div class="signal-item"><span>Target with: "next step after your breathwork practice" messaging</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="persona-card card-blue">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#1e3a5f">🌀</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Psychic Path Walker <span class="diff-badge new">↑ newly visible</span></div>
+        <div class="persona-tagline">"I'm learning these abilities — and I want a reading to confirm my path."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#60a5fa">48</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#60a5fa">8%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Awaken Your Psychic Abilities</span>
+        <span class="chip">Find Clarity Through Intuitive Power</span>
+        <span class="chip">Break the Cycle: Understand & Heal Your Karma</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Tarot Card Reading</span>
+        <span class="chip">Psychic Tarot Card Reading</span>
+        <span class="chip">Intuitive Psychic Reading</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Learning psychic skills in courses while simultaneously <strong>booking readings from expert practitioners</strong> — they learn by doing and by observing. Their courses focus on the karmic understanding behind intuition, and their sessions validate whether their own abilities are developing. Future practitioner pipeline.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Courses and sessions on the same theme — skill + service loop</span></div>
+        <div class="signal-item"><span>High content engagement; aspires to give readings eventually</span></div>
+        <div class="signal-item"><span>Practitioner community / mentorship program opportunity</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

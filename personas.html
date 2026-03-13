@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Personas — Paid Users</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f0f13;
+    color: #e8e8f0;
+    line-height: 1.6;
+    padding: 24px;
+  }
+
+  /* Nav */
+  .nav { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; align-items: center; }
+  .nav a {
+    font-size: 12px; font-weight: 500; padding: 6px 14px;
+    border-radius: 6px; text-decoration: none; border: 1px solid #2a2a3a;
+    color: #a0a0b8; transition: all .15s;
+  }
+  .nav a.active { background: #252530; color: #e8e8f0; border-color: #3a3a4a; }
+  .nav a:hover { color: #e8e8f0; border-color: #3a3a4a; }
+  .nav-label { font-size: 11px; color: #374151; padding-right: 4px; }
+  .nav-divider { width: 1px; height: 24px; background: #2a2a3a; margin: 0 4px; }
+
+  h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px;
+    background: linear-gradient(135deg, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 32px; }
+
+  /* Section header */
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 18px; margin-top: 36px;
+  }
+  .section-header:first-of-type { margin-top: 0; }
+  .section-badge {
+    font-size: 11px; font-weight: 600; padding: 4px 12px;
+    border-radius: 99px; white-space: nowrap;
+  }
+  .section-line { flex: 1; height: 1px; background: #2a2a3a; }
+  .section-count { font-size: 12px; color: #4b5563; white-space: nowrap; }
+
+  /* Persona grid */
+  .persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 12px; }
+
+  /* Persona card */
+  .persona-card {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 14px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .persona-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  /* Color variants */
+  .card-purple::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+  .card-pink::before   { background: linear-gradient(90deg, #db2777, #f472b6); }
+  .card-amber::before  { background: linear-gradient(90deg, #d97706, #fbbf24); }
+  .card-blue::before   { background: linear-gradient(90deg, #1d4ed8, #60a5fa); }
+  .card-green::before  { background: linear-gradient(90deg, #059669, #34d399); }
+  .card-orange::before { background: linear-gradient(90deg, #ea580c, #fb923c); }
+  .card-rose::before   { background: linear-gradient(90deg, #e11d48, #fb7185); }
+  .card-teal::before   { background: linear-gradient(90deg, #0d9488, #2dd4bf); }
+  .card-indigo::before { background: linear-gradient(90deg, #4338ca, #818cf8); }
+  .card-yellow::before { background: linear-gradient(90deg, #ca8a04, #facc15); }
+  .card-emerald::before{ background: linear-gradient(90deg, #047857, #10b981); }
+  .card-cyan::before   { background: linear-gradient(90deg, #0e7490, #22d3ee); }
+  .card-fuchsia::before{ background: linear-gradient(90deg, #a21caf, #e879f9); }
+  .card-lime::before   { background: linear-gradient(90deg, #4d7c0f, #a3e635); }
+  .card-sky::before    { background: linear-gradient(90deg, #0369a1, #38bdf8); }
+
+  .persona-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+  .persona-avatar {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .persona-meta { flex: 1; }
+  .persona-name { font-size: 15px; font-weight: 700; color: #e8e8f0; margin-bottom: 2px; }
+  .persona-tagline { font-size: 11px; color: #6b7280; font-style: italic; }
+
+  .persona-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 14px;
+  }
+  .pstat { background: #252530; border-radius: 8px; padding: 8px 10px; }
+  .pstat-label { font-size: 10px; color: #4b5563; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
+  .pstat-val { font-size: 14px; font-weight: 700; }
+
+  .persona-section { margin-bottom: 12px; }
+  .persona-section-title { font-size: 10px; color: #4b5563; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 7px; font-weight: 600; }
+
+  .chip-list { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip {
+    font-size: 11px; padding: 3px 9px; border-radius: 99px;
+    background: #252530; color: #a0a0b8; border: 1px solid #2a2a3a;
+    white-space: nowrap;
+  }
+
+  .motivation-text { font-size: 12px; color: #9ca3af; line-height: 1.55; }
+  .motivation-text strong { color: #e8e8f0; }
+
+  .signal-list { display: flex; flex-direction: column; gap: 4px; }
+  .signal-item { display: flex; align-items: baseline; gap: 6px; font-size: 11px; color: #6b7280; }
+  .signal-item::before { content: '→'; color: #374151; flex-shrink: 0; }
+  .signal-item span { color: #9ca3af; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-label">All paid:</span>
+  <a href="insights.html">Insights</a>
+  <a href="personas.html" class="active">Personas</a>
+  <div class="nav-divider"></div>
+  <span class="nav-label">Excl. top leaders:</span>
+  <a href="insights_no_leaders.html">Insights</a>
+  <a href="personas_no_leaders.html">Personas</a>
+</div>
+
+<h1>User Personas — Paid Users</h1>
+<p class="subtitle">5 personas each for Course buyers, 1-on-1 bookers, and overlap users. Based on purchase clustering from Book1_paid.csv.</p>
+
+<!-- ═══════════════════════════════════ COURSE PERSONAS ═══════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-badge" style="background:#3b1f6e;color:#c4b5fd">Course Buyers</div>
+  <div class="section-line"></div>
+  <div class="section-count">19,250 paid users · avg 2.25 courses each</div>
+</div>
+
+<div class="persona-grid">
+
+  <!-- 1: The Karmic Healer -->
+  <div class="persona-card card-purple">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#2d1b69">🌀</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Karmic Healer</div>
+        <div class="persona-tagline">"I need to break these patterns once and for all."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#a78bfa">5,553</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#a78bfa">2.4</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">All About Karmic Relationships</span>
+        <span class="chip">Heal Your Core Wound</span>
+        <span class="chip">Ancestral Healing</span>
+        <span class="chip">Restore Your Gut Energy Flow</span>
+        <span class="chip">Karma</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Deeply self-aware and often mid-journey. They've identified <strong>repeating life patterns</strong> — in relationships, money, or health — and are actively paying to break them. They believe their struggles have a spiritual root cause and want structured tools to release it.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Highest avg course count (2.4) — most committed buyers</span></div>
+        <div class="signal-item"><span>Co-buys across karmic, ancestral, and gut/body healing</span></div>
+        <div class="signal-item"><span>Respond well to course bundles and multi-week programs</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2: The Wealth Manifestor -->
+  <div class="persona-card card-amber">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#451a03">✨</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Wealth Manifestor</div>
+        <div class="persona-tagline">"I'm ready to attract the abundance I deserve."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#fbbf24">5,296</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#fbbf24">2.3</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Manifest Like A Millionaire</span>
+        <span class="chip">Energy Numbers & Visualisation</span>
+        <span class="chip">Manifesting Love</span>
+        <span class="chip">Healing The Money Wound</span>
+        <span class="chip">Connect with Guardian Angels</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Outcome-oriented and aspirational. They want <strong>concrete tools to attract wealth, love, and success</strong>. They buy both the "how" (crystals, numbers, visualisation) and the "why" (money wounds, limiting beliefs). Highly motivated by transformation promises.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Buys across manifestation AND healing — addresses root + activation</span></div>
+        <div class="signal-item"><span>Responsive to scarcity framing, portal events, and timely launches</span></div>
+        <div class="signal-item"><span>High potential for upsell into 1-on-1 manifestation coaching</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: The Devotional Practitioner -->
+  <div class="persona-card card-orange">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#431407">🙏</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Devotional Practitioner</div>
+        <div class="persona-tagline">"My spirituality is rooted in my culture and traditions."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#fb923c">2,234</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#fb923c">2.0</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Hanuman Sadhana & Naamjap</span>
+        <span class="chip">Pyaar</span>
+        <span class="chip">Parivar</span>
+        <span class="chip">Chant Gayatri Mantra</span>
+        <span class="chip">Prosperity & Inner Strength</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Grounded in <strong>Indian cultural and devotional practice</strong>. They want to deepen their existing spiritual traditions — not replace them. Chanting, sadhana, and mantra feel like home. They also buy practical life content (Pyaar = love, Parivar = family) that blends spirituality and lived experience.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Buys in Hindi/Hinglish titled content at higher rates</span></div>
+        <div class="signal-item"><span>High loyalty — likely to return for seasonal/festival content</span></div>
+        <div class="signal-item"><span>Community-oriented; respond well to group practice formats</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: The Angelic Explorer -->
+  <div class="persona-card card-blue">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#1e3a5f">👼</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Angelic Explorer</div>
+        <div class="persona-tagline">"I'm just beginning to open up to the unseen world."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#60a5fa">1,906</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#60a5fa">1.4</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Connect with Guardian Angels</span>
+        <span class="chip">Awaken Your Psychic Abilities</span>
+        <span class="chip">Voice-based Tools for Nervous Balance</span>
+        <span class="chip">Restore Your Gut Energy Flow</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text"><strong>Curious and early-stage</strong> on the spiritual journey. They are drawn to gentle, accessible introductions — angels, psychic development, energy work. Lower avg course count (1.4) suggests they're still sampling and building trust before committing to deeper programs.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Lowest avg course count — highest growth potential</span></div>
+        <div class="signal-item"><span>Needs nurture sequences before upsell attempts</span></div>
+        <div class="signal-item"><span>Gateway to psychic/divination 1-on-1 services if engaged well</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5: The Body & Breath Seeker -->
+  <div class="persona-card card-teal">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#042f2e">🫧</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Body & Breath Seeker</div>
+        <div class="persona-tagline">"I need calm. My nervous system is exhausted."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#2dd4bf">1,340</div></div>
+      <div class="pstat"><div class="pstat-label">Avg courses</div><div class="pstat-val" style="color:#2dd4bf">2.1</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Top purchases</div>
+      <div class="chip-list">
+        <span class="chip">Breathe</span>
+        <span class="chip">Tap (EFT)</span>
+        <span class="chip">Release: A Stress Reset Program</span>
+        <span class="chip">Voice Activation for Inner Clarity</span>
+        <span class="chip">Balance Hormones Through Sound</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Primarily motivated by <strong>physical and emotional regulation</strong>. They experience stress, anxiety, or hormonal imbalance and are looking for somatic/body-based tools. They approach spirituality through the body — breath, sound, and nervous system reset rather than belief or ritual.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Combines breathwork, EFT/tapping, and sound healing content</span></div>
+        <div class="signal-item"><span>Crossover audience with wellness/mental health adjacent content</span></div>
+        <div class="signal-item"><span>High potential for anxiety-release 1-on-1 sessions upsell</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════ 1-on-1 PERSONAS ═══════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-badge" style="background:#064e3b;color:#6ee7b7">1-on-1 Bookers</div>
+  <div class="section-line"></div>
+  <div class="section-count">1,920 paid users · avg 1.27 sessions each · 108 unique services</div>
+</div>
+
+<div class="persona-grid">
+
+  <!-- 1: The Fortune Seeker -->
+  <div class="persona-card card-indigo">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#1e1b4b">🔮</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Fortune Seeker</div>
+        <div class="persona-tagline">"Tell me what the cards say about my situation."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#818cf8">572</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#818cf8">47%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Tarot Card Reading</span>
+        <span class="chip">Psychic Tarot Card Reading</span>
+        <span class="chip">Angel Guidance</span>
+        <span class="chip">Psychic Reading</span>
+        <span class="chip">Connect With Your Spirit Team</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Seeking <strong>external validation and guidance</strong> for decisions they've already half-made. They want personalised reassurance — about relationships, career, or timing. The reading gives them permission to act. Often repeat bookers when a reading resonates.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Largest 1-on-1 segment at 47% of all bookers</span></div>
+        <div class="signal-item"><span>High repeat-booking potential when matched with right reader</span></div>
+        <div class="signal-item"><span>Discovery-driven — likely finds practitioners through search/browse</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2: The Soul Excavator -->
+  <div class="persona-card card-fuchsia">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#4a044e">🌌</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Soul Excavator</div>
+        <div class="persona-tagline">"I want to understand the deeper story of my soul."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#e879f9">303</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#e879f9">25%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Akashic Record Reading</span>
+        <span class="chip">Soul Purpose Plan</span>
+        <span class="chip">Karmic & Spiritual Healing Plan</span>
+        <span class="chip">Reiki Healing</span>
+        <span class="chip">Akashic Records Readings</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Deeply introspective. They're not looking for predictions — they want <strong>soul-level understanding of who they are and why they're here</strong>. Akashic records, soul contracts, and healing plans resonate because they feel comprehensive. These are high-LTV buyers who trust the process.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Buys premium, longer-format sessions (plans vs. readings)</span></div>
+        <div class="signal-item"><span>Highest willingness to pay — longest session types</span></div>
+        <div class="signal-item"><span>Strong candidate for ongoing practitioner relationships</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: The Cosmic Navigator -->
+  <div class="persona-card card-sky">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#082f49">⭐</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Cosmic Navigator</div>
+        <div class="persona-tagline">"I make better decisions when I know my chart."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#38bdf8">113</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#38bdf8">9%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Birth Chart Analysis</span>
+        <span class="chip">Wrist Watch Astrology</span>
+        <span class="chip">Vedic Numerology Blueprint</span>
+        <span class="chip">Soul Purpose Plan</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Analytical and methodical about their spiritual practice. They use <strong>astrology and numerology as decision frameworks</strong> — timing major moves, understanding personality, and planning by cosmic cycles. They want structured, data-rich personal reports rather than free-flowing readings.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Combines astrology with numerology — builds a complete system</span></div>
+        <div class="signal-item"><span>Returns annually for transit/yearly readings</span></div>
+        <div class="signal-item"><span>Responds well to structured report formats and follow-up sessions</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: The Animal Whisperer -->
+  <div class="persona-card card-lime">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#1a2e05">🐾</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Animal Whisperer</div>
+        <div class="persona-tagline">"My pet is trying to tell me something."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#a3e635">92</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#a3e635">8%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Animal Telepathy</span>
+        <span class="chip">Tarot & Lenormand Reading</span>
+        <span class="chip">Birth Chart Analysis</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">A highly distinct, deeply loyal niche. Their pet's wellbeing or behaviour is the primary motivation. They have <strong>zero corresponding course supply</strong> to meet this demand — they paid for sessions without any course to onboard them. High emotional investment drives repeat booking.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Paid for 113 sessions with no matching course inventory — unmet demand</span></div>
+        <div class="signal-item"><span>Niche but vocal — likely drives referrals within pet communities</span></div>
+        <div class="signal-item"><span>Opportunity: introduce animal communication intro courses to convert</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5: The Anxiety Releaser -->
+  <div class="persona-card card-green">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#022c22">🌿</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Anxiety Releaser</div>
+        <div class="persona-tagline">"I need support, not just information."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#34d399">85</div></div>
+      <div class="pstat"><div class="pstat-label">% of 1-on-1</div><div class="pstat-val" style="color:#34d399">7%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Sessions booked</div>
+      <div class="chip-list">
+        <span class="chip">Release Anxiety with Breathwork</span>
+        <span class="chip">Hypnotherapy</span>
+        <span class="chip">Theta Healing & Manifestation</span>
+        <span class="chip">Reiki Healing</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Coming from a <strong>mental wellness need</strong>, not a spiritual curiosity. They experience anxiety, overwhelm, or emotional stuck-ness and are seeking therapeutic-style relief through holistic practitioners. Reiki, breathwork, and hypnotherapy feel safer or more accessible than traditional therapy to this segment.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Most likely to come via word-of-mouth or mental wellness communities</span></div>
+        <div class="signal-item"><span>Responds to outcome framing: "feel calmer in 60 minutes"</span></div>
+        <div class="signal-item"><span>Crossover potential with breathwork and EFT courses</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════ OVERLAP PERSONAS ═══════════════════════════════════ -->
+<div class="section-header">
+  <div class="section-badge" style="background:#422006;color:#fcd34d">Course + 1-on-1 (Overlap)</div>
+  <div class="section-line"></div>
+  <div class="section-count">713 users · 3.5% of all paid active users · highest engagement segment</div>
+</div>
+
+<div class="persona-grid">
+
+  <!-- 1: The Deep Healing Pilgrim -->
+  <div class="persona-card card-rose">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#4c0519">🕊️</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Deep Healing Pilgrim</div>
+        <div class="persona-tagline">"I'm ready to go all the way with this."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#fb7185">313</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#fb7185">44%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">All About Karmic Relationships</span>
+        <span class="chip">Ancestral Healing</span>
+        <span class="chip">Connect with Guardian Angels</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Akashic Record Reading</span>
+        <span class="chip">Soul Purpose Plan</span>
+        <span class="chip">Psychic Tarot Card Reading</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">The platform's <strong>most invested buyer</strong>. They use courses to build understanding and then book 1-on-1 sessions to apply it personally. They move from group learning to personal healing systematically. High LTV, high trust, and likely to recommend practitioners.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Largest overlap segment at 44% — highest engagement, highest spend</span></div>
+        <div class="signal-item"><span>Course → session journey: learn group, apply personally</span></div>
+        <div class="signal-item"><span>Ideal candidates for membership or ongoing healing programs</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2: The Manifestation Validator -->
+  <div class="persona-card card-yellow">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#422006">💰</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Manifestation Validator</div>
+        <div class="persona-tagline">"Let me confirm I'm on the right track with a reading."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#facc15">125</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#facc15">18%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Manifest Like A Millionaire</span>
+        <span class="chip">Energy Numbers & Visualisation</span>
+        <span class="chip">Connect with Guardian Angels</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Psychic Tarot Card Reading</span>
+        <span class="chip">Birth Chart Analysis</span>
+        <span class="chip">Tarot Card Reading</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">They take manifestation courses to learn the method, then <strong>book tarot or birth chart sessions to validate their timing and alignment</strong>. They want external confirmation that they're ready to receive. The reading functions as a confidence ritual before taking a big step.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Course and session purchases often close together in timing</span></div>
+        <div class="signal-item"><span>Respond to "next steps" CTAs at course completion</span></div>
+        <div class="signal-item"><span>Prime upsell target: offer a reading at course checkout</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: The Psychic Self-Developer -->
+  <div class="persona-card card-cyan">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#042830">🌠</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Psychic Self-Developer</div>
+        <div class="persona-tagline">"I'm building my own abilities while learning from the best."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#22d3ee">91</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#22d3ee">13%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Connect with Guardian Angels</span>
+        <span class="chip">Awaken Your Psychic Abilities</span>
+        <span class="chip">Understanding Death & Beyond</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Psychic Tarot Card Reading</span>
+        <span class="chip">Tarot Card Reading</span>
+        <span class="chip">Angel Guidance</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">They're developing their own psychic/intuitive gifts through courses while simultaneously <strong>receiving readings from established practitioners</strong>. Learning by doing and by observing. They see practitioners as mentors as much as service providers and aspire to offer these services themselves one day.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Buys both the skill course AND the service from an expert</span></div>
+        <div class="signal-item"><span>Future practitioner pipeline — potential platform contributors</span></div>
+        <div class="signal-item"><span>Engage with "how it works" content and practitioner spotlights</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: The Spiritually Grounded -->
+  <div class="persona-card card-emerald">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#022c22">🪔</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Spiritually Grounded</div>
+        <div class="persona-tagline">"My practice runs deep — I want personalised guidance within it."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#10b981">59</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#10b981">8%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Hanuman Sadhana & Naamjap</span>
+        <span class="chip">Chant Gayatri Mantra</span>
+        <span class="chip">Prosperity & Inner Strength</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Karmic & Spiritual Healing Plan</span>
+        <span class="chip">Release Anxiety with Breathwork</span>
+        <span class="chip">Tarot Card Reading</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Firmly rooted in Indian devotional tradition through their course buys, but they also <strong>seek personalised healing sessions to address current-life challenges</strong>. They blend structured devotional practice with individual therapeutic support. High cultural identity, moderate openness to new formats.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Cross-buys between cultural content and healing sessions</span></div>
+        <div class="signal-item"><span>Responds to practitioners who honour Indian spiritual traditions</span></div>
+        <div class="signal-item"><span>Builds trust slowly — long nurture cycle before first 1-on-1</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5: The Celestial Planner -->
+  <div class="persona-card card-pink">
+    <div class="persona-top">
+      <div class="persona-avatar" style="background:#500724">🌙</div>
+      <div class="persona-meta">
+        <div class="persona-name">The Celestial Planner</div>
+        <div class="persona-tagline">"I align my major decisions with cosmic timing."</div>
+      </div>
+    </div>
+    <div class="persona-stats">
+      <div class="pstat"><div class="pstat-label">Segment size</div><div class="pstat-val" style="color:#f472b6">27</div></div>
+      <div class="pstat"><div class="pstat-label">% of overlap</div><div class="pstat-val" style="color:#f472b6">4%</div></div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Courses bought</div>
+      <div class="chip-list">
+        <span class="chip">Align Your Intentions with 11/11 Portal</span>
+        <span class="chip">New Moon</span>
+        <span class="chip">New You: Align and Manifest</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">1-on-1 booked</div>
+      <div class="chip-list">
+        <span class="chip">Psychic Tarot Card Reading</span>
+        <span class="chip">Birth Chart Analysis</span>
+        <span class="chip">Angel Guidance</span>
+      </div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">What drives them</div>
+      <div class="motivation-text">Smaller in size but extremely intentional. They use <strong>cosmic events as action triggers</strong> — portal dates, new moons, and annual cycles — and buy both courses for the group ritual and 1-on-1 sessions for personalised cosmic mapping. Highly predictable buying behaviour around event calendars.</div>
+    </div>
+    <div class="persona-section">
+      <div class="persona-section-title">Signals & behaviours</div>
+      <div class="signal-list">
+        <div class="signal-item"><span>Purchase spikes correlate directly with cosmic event dates</span></div>
+        <div class="signal-item"><span>Extremely responsive to pre-event launch campaigns and countdowns</span></div>
+        <div class="signal-item"><span>Bundle opportunity: event course + birth chart reading combo</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

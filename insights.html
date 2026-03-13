@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paid User Engagement Insights</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f0f13;
+    color: #e8e8f0;
+    line-height: 1.6;
+    padding: 24px;
+  }
+  h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; background: linear-gradient(135deg, #a78bfa, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 28px; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .stat-card { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 12px; padding: 18px; }
+  .stat-card .label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+  .stat-card .value { font-size: 30px; font-weight: 700; }
+  .stat-card .note { font-size: 11px; color: #6b7280; margin-top: 3px; }
+
+  .purple { color: #a78bfa; } .blue { color: #60a5fa; } .green { color: #34d399; }
+  .amber { color: #fbbf24; } .pink { color: #f472b6; } .orange { color: #fb923c; }
+
+  .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  @media (max-width: 860px) { .section-grid { grid-template-columns: 1fr; } }
+
+  .panel { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 12px; padding: 22px; }
+  .panel.full { grid-column: 1 / -1; }
+
+  .panel-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 99px; }
+  .tag-purple { background: #3b1f6e; color: #c4b5fd; }
+  .tag-blue   { background: #1e3a5f; color: #93c5fd; }
+  .tag-green  { background: #064e3b; color: #6ee7b7; }
+  .tag-amber  { background: #451a03; color: #fcd34d; }
+
+  .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .theme-bubble { background: #252530; border-radius: 10px; padding: 12px 10px; text-align: center; border: 1px solid transparent; }
+  .theme-bubble .t-icon { font-size: 20px; margin-bottom: 5px; }
+  .theme-bubble .t-name { font-size: 11px; color: #a0a0b8; font-weight: 500; margin-bottom: 3px; line-height: 1.3; }
+  .theme-bubble .t-count { font-size: 17px; font-weight: 700; }
+  .theme-bubble .t-pct { font-size: 10px; color: #6b7280; }
+
+  .bar-list { display: flex; flex-direction: column; gap: 9px; }
+  .bar-item {}
+  .bar-meta { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+  .bar-name { color: #c7c7d9; max-width: 82%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-count { color: #6b7280; font-variant-numeric: tabular-nums; }
+  .bar-track { background: #252530; border-radius: 4px; height: 6px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+
+  .overlap-wrap { display: flex; align-items: flex-start; gap: 28px; flex-wrap: wrap; }
+  .overlap-stats { flex: 1 1 180px; display: flex; flex-direction: column; gap: 14px; }
+  .ol-label { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
+  .ol-val { font-size: 20px; font-weight: 700; }
+
+  .dual-theme { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 680px) { .dual-theme { grid-template-columns: 1fr; } }
+  .sub-label { font-size: 11px; color: #6b7280; margin-bottom: 8px; }
+
+  .insight-list { display: flex; flex-direction: column; gap: 9px; }
+  .insight-item { background: #252530; border-left: 3px solid; border-radius: 0 8px 8px 0; padding: 11px 13px; font-size: 12px; color: #c7c7d9; line-height: 1.55; }
+  .insight-item strong { color: #e8e8f0; }
+
+  .want-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .want-card { background: #252530; border-radius: 10px; padding: 14px; }
+  .want-card .w-icon { font-size: 18px; margin-bottom: 7px; }
+  .want-card .w-title { font-size: 12px; font-weight: 600; color: #e8e8f0; margin-bottom: 3px; }
+  .want-card .w-desc { font-size: 11px; color: #6b7280; line-height: 1.55; }
+
+  .callout { background: #1e1a2e; border: 1px solid #3b1f6e; border-radius: 10px; padding: 14px 16px; font-size: 12px; color: #c4b5fd; margin-bottom: 20px; line-height: 1.6; }
+  .callout strong { color: #e8e8f0; }
+
+  hr.divider { border: none; border-top: 1px solid #2a2a3a; margin: 6px 0 18px; }
+</style>
+</head>
+<body>
+
+<div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;align-items:center">
+  <span style="font-size:11px;color:#374151;padding-right:4px">All paid:</span>
+  <a href="insights.html" style="font-size:12px;font-weight:500;padding:6px 14px;border-radius:6px;text-decoration:none;border:1px solid #3a3a4a;color:#e8e8f0;background:#252530">Insights</a>
+  <a href="personas.html" style="font-size:12px;font-weight:500;padding:6px 14px;border-radius:6px;text-decoration:none;border:1px solid #2a2a3a;color:#a0a0b8">Personas</a>
+  <div style="width:1px;height:24px;background:#2a2a3a;margin:0 4px"></div>
+  <span style="font-size:11px;color:#374151;padding-right:4px">Excl. top leaders:</span>
+  <a href="insights_no_leaders.html" style="font-size:12px;font-weight:500;padding:6px 14px;border-radius:6px;text-decoration:none;border:1px solid #2a2a3a;color:#a0a0b8">Insights</a>
+  <a href="personas_no_leaders.html" style="font-size:12px;font-weight:500;padding:6px 14px;border-radius:6px;text-decoration:none;border:1px solid #2a2a3a;color:#a0a0b8">Personas</a>
+</div>
+
+<h1>Paid User Engagement Insights</h1>
+<p class="subtitle">Source: Book1_paid.csv — users where both course and one-on-one are null are excluded</p>
+
+<div class="callout">
+  <strong>Key shift vs. all users:</strong> Daily SoulSync meditation series (the #1 driver in all-user data with 8,651 enrollments) is completely absent from the paid top 30. Paid users are buying <strong>outcome-driven content</strong> — manifestation, healing, and karmic work — not recurring free-tier daily sessions.
+</div>
+
+<!-- KPI Cards -->
+<div class="stat-row">
+  <div class="stat-card">
+    <div class="label">Active Paid Users</div>
+    <div class="value purple">20,457</div>
+    <div class="note">have ≥1 course or session</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Course Buyers</div>
+    <div class="value blue">19,250</div>
+    <div class="note">paid for ≥1 course</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">1-on-1 Bookers</div>
+    <div class="value green">1,920</div>
+    <div class="note">paid for ≥1 session</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Course Only</div>
+    <div class="value blue">18,537</div>
+    <div class="note">no 1-on-1 bookings</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">1-on-1 Only</div>
+    <div class="value green">1,207</div>
+    <div class="note">no courses purchased</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Both Channels</div>
+    <div class="value amber">713</div>
+    <div class="note">course + 1-on-1</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Avg Courses / User</div>
+    <div class="value pink">2.25</div>
+    <div class="note">among course buyers</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Avg Sessions / User</div>
+    <div class="value orange">1.27</div>
+    <div class="note">among 1-on-1 bookers</div>
+  </div>
+</div>
+
+<!-- Theme panels -->
+<div class="section-grid">
+  <div class="panel">
+    <div class="panel-title">What's Working — Courses <span class="tag tag-blue">Paid enrollments by theme</span></div>
+    <div class="theme-grid" id="courseThemes"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">What's Working — 1-on-1 <span class="tag tag-green">Paid bookings by theme</span></div>
+    <div class="theme-grid" id="oneThemes"></div>
+  </div>
+</div>
+
+<!-- Bar charts -->
+<div class="section-grid">
+  <div class="panel">
+    <div class="panel-title">Top 15 Paid Courses</div>
+    <div class="bar-list" id="topCourses"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Top 15 Paid 1-on-1 Sessions</div>
+    <div class="bar-list" id="topOneOnOne"></div>
+  </div>
+</div>
+
+<!-- Overlap -->
+<div class="section-grid">
+  <div class="panel">
+    <div class="panel-title">User Overlap</div>
+    <div class="overlap-wrap">
+      <div>
+        <svg width="220" height="160" viewBox="0 0 220 160">
+          <defs>
+            <radialGradient id="gA" cx="40%" cy="50%"><stop offset="0%" stop-color="#a78bfa" stop-opacity=".35"/><stop offset="100%" stop-color="#a78bfa" stop-opacity=".05"/></radialGradient>
+            <radialGradient id="gB" cx="60%" cy="50%"><stop offset="0%" stop-color="#34d399" stop-opacity=".35"/><stop offset="100%" stop-color="#34d399" stop-opacity=".05"/></radialGradient>
+            <radialGradient id="gC" cx="50%" cy="50%"><stop offset="0%" stop-color="#60a5fa" stop-opacity=".35"/><stop offset="100%" stop-color="#60a5fa" stop-opacity=".05"/></radialGradient>
+          </defs>
+          <!-- course circle -->
+          <circle cx="80" cy="80" r="62" fill="url(#gA)" stroke="#a78bfa" stroke-width="1.5" stroke-opacity=".6"/>
+          <!-- 1on1 circle -->
+          <circle cx="140" cy="80" r="62" fill="url(#gB)" stroke="#34d399" stroke-width="1.5" stroke-opacity=".6"/>
+          <text x="52" y="72" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600">Course</text>
+          <text x="52" y="84" text-anchor="middle" fill="#c4b5fd" font-size="10">Only</text>
+          <text x="52" y="98" text-anchor="middle" fill="#c4b5fd" font-size="12" font-weight="700">18,537</text>
+          <text x="168" y="72" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="600">1:1</text>
+          <text x="168" y="84" text-anchor="middle" fill="#6ee7b7" font-size="10">Only</text>
+          <text x="168" y="98" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="700">1,207</text>
+          <text x="110" y="74" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="600">Both</text>
+          <text x="110" y="88" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="700">713</text>
+        </svg>
+      </div>
+      <div class="overlap-stats">
+        <div>
+          <div class="ol-label">Overlap rate (of 1:1 bookers)</div>
+          <div class="ol-val amber">37.1%</div>
+        </div>
+        <div>
+          <div class="ol-label">Overlap rate (of all active paid)</div>
+          <div class="ol-val amber">3.5%</div>
+        </div>
+        <div>
+          <div class="ol-label">Pure 1:1 paid users</div>
+          <div class="ol-val green">1,207</div>
+        </div>
+        <div>
+          <div class="ol-label">Unique paid 1:1 services</div>
+          <div class="ol-val blue">108</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Overlap Users — What They Choose</div>
+    <div class="dual-theme">
+      <div>
+        <div class="sub-label">Their courses</div>
+        <div class="bar-list" id="overlapCourses"></div>
+      </div>
+      <div>
+        <div class="sub-label">Their 1-on-1 sessions</div>
+        <div class="bar-list" id="overlapOne"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Insights -->
+<div class="section-grid">
+  <div class="panel">
+    <div class="panel-title">Key Course Insights</div>
+    <div class="insight-list">
+      <div class="insight-item" style="border-color:#fbbf24">
+        <strong>Manifestation is the #1 paid theme.</strong> Unlike free/all-user data where meditation dominated, paid users lead with Manifestation & Abundance (12,213 enrollments). "Manifest Like A Millionaire" and "Energy Numbers & Visualisation" both hit <strong>2,786</strong> — the top two spots tied.
+      </div>
+      <div class="insight-item" style="border-color:#f472b6">
+        <strong>Healing is close behind.</strong> Healing & Soul Work (11,381) is nearly equal to Manifestation — karmic relationships, core wounds, ancestral healing, cords & cleansing are all top paid items. Users are paying to process and release.
+      </div>
+      <div class="insight-item" style="border-color:#a78bfa">
+        <strong>Spirituality & community converts well.</strong> Hanuman Sadhana (1,126), Pyaar (386), Parivar (386) — culturally rooted Indian spiritual content has a strong paid buyer base.
+      </div>
+      <div class="insight-item" style="border-color:#60a5fa">
+        <strong>Voice & Sound Healing is a paid-only signal.</strong> With 1,084 enrollments, this theme barely appears in free content — it's a differentiated paid niche with clear demand.
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Key 1-on-1 Insights</div>
+    <div class="insight-list">
+      <div class="insight-item" style="border-color:#34d399">
+        <strong>Psychic & Divination dominates at 57%.</strong> Tarot Card Reading (374), Psychic Tarot (248) and Akashic Records (180+38) make up the bulk. Paid users treat 1-on-1 as a personal reading service, not coaching.
+      </div>
+      <div class="insight-item" style="border-color:#60a5fa">
+        <strong>Soul direction services convert at premium.</strong> Soul Purpose Plan (170) and Birth Chart Analysis (167) are high-value personal consultations — users paying for clarity on their life path.
+      </div>
+      <div class="insight-item" style="border-color:#fb923c">
+        <strong>1,207 pure 1-on-1 paid users — a distinct segment.</strong> These users skipped all courses and went straight to a personal session. They likely came in via practitioner referrals or specific service discovery — worth a targeted retention flow.
+      </div>
+      <div class="insight-item" style="border-color:#e879f9">
+        <strong>Animal Telepathy punches above its weight.</strong> 113 bookings with zero significant course demand — this niche has a loyal, ready-to-pay audience not being served in the course catalogue.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- What users want -->
+<div class="panel full">
+  <div class="panel-title">What Paid Users Are Looking For</div>
+  <hr class="divider">
+  <div class="want-grid">
+    <div class="want-card">
+      <div class="w-icon">✨</div>
+      <div class="w-title">Manifestation & Wealth</div>
+      <div class="w-desc">The #1 paid theme. Users actively invest in tools to attract money, abundance, and opportunity — crystals, energy numbers, visualisation, wiring.</div>
+    </div>
+    <div class="want-card">
+      <div class="w-icon">💜</div>
+      <div class="w-title">Deep Healing</div>
+      <div class="w-desc">Karmic ties, core wounds, ancestral patterns, cord cutting — paid users are buying structured healing programs, not just awareness content.</div>
+    </div>
+    <div class="want-card">
+      <div class="w-icon">🔮</div>
+      <div class="w-title">Personal Readings</div>
+      <div class="w-desc">Tarot, psychic, and akashic readings are the dominant 1-on-1 purchase. Paid users want personalised answers, not group sessions.</div>
+    </div>
+    <div class="want-card">
+      <div class="w-icon">⭐</div>
+      <div class="w-title">Soul Purpose & Direction</div>
+      <div class="w-desc">Soul Purpose Plans and Birth Chart Analysis rank high — paying users want structured guidance on who they are and where they're going.</div>
+    </div>
+    <div class="want-card">
+      <div class="w-icon">🙏</div>
+      <div class="w-title">Cultural Spirituality</div>
+      <div class="w-desc">Hanuman Sadhana, Gayatri Mantra, Pyaar, Parivar — culturally resonant Indian content has a committed paid audience willing to invest.</div>
+    </div>
+    <div class="want-card">
+      <div class="w-icon">🎵</div>
+      <div class="w-title">Voice & Sound Healing</div>
+      <div class="w-desc">970 enrollments in Voice Activation alone, 365 in voice-based nervous balance tools — an underappreciated paid niche with strong demand.</div>
+    </div>
+    <div class="want-card">
+      <div class="w-icon">🐾</div>
+      <div class="w-title">Animal Communication</div>
+      <div class="w-desc">A niche but highly monetisable segment — 113 paid animal telepathy sessions with almost no corresponding course inventory to serve them.</div>
+    </div>
+    <div class="want-card">
+      <div class="w-icon">🌙</div>
+      <div class="w-title">Cosmic Timing & Portals</div>
+      <div class="w-desc">11/11 portal alignment, new moon circles, and ancestral timing events — paid users engage with time-sensitive energy events and buy in for them.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const courseThemeData = [
+  { name: 'Manifestation & Abundance', count: 12213, icon: '✨', color: '#fbbf24' },
+  { name: 'Healing & Soul Work',       count: 11381, icon: '💜', color: '#f472b6' },
+  { name: 'Spirituality & Community',  count: 4530,  icon: '🙏', color: '#fb923c' },
+  { name: 'Psychic & Divination',      count: 3716,  icon: '🔮', color: '#60a5fa' },
+  { name: 'Meditation & Breathwork',   count: 3145,  icon: '🧘', color: '#a78bfa' },
+  { name: 'Voice & Sound Healing',     count: 1084,  icon: '🎵', color: '#e879f9' },
+  { name: 'Astrology & Numerology',    count: 1284,  icon: '⭐', color: '#34d399' },
+  { name: 'Hypnotherapy & EFT',        count: 571,   icon: '🔄', color: '#6b7280' },
+  { name: 'Other / Emerging',          count: 5362,  icon: '🌀', color: '#4b5563' },
+];
+
+const oneThemeData = [
+  { name: 'Psychic & Divination',     count: 1362, icon: '🔮', color: '#60a5fa' },
+  { name: 'Healing & Soul Work',      count: 403,  icon: '💜', color: '#f472b6' },
+  { name: 'Astrology & Numerology',   count: 249,  icon: '⭐', color: '#34d399' },
+  { name: 'Other',                    count: 116,  icon: '🌀', color: '#4b5563' },
+  { name: 'Animal Communication',     count: 113,  icon: '🐾', color: '#fb923c' },
+  { name: 'Meditation & Breathwork',  count: 107,  icon: '🧘', color: '#a78bfa' },
+  { name: 'Hypnotherapy & EFT',       count: 35,   icon: '🔄', color: '#6b7280' },
+  { name: 'Manifestation',            count: 25,   icon: '✨', color: '#fbbf24' },
+];
+
+const topCoursesData = [
+  ['Manifest Like A Millionaire: Wealth With Crystals', 2786],
+  ['Energy Numbers & Visualisation', 2786],
+  ['Connect with Your Guardian Angels', 2701],
+  ['Manifesting Love: A Journey to Heal and Attract', 1195],
+  ['All About Karmic Relationships', 1162],
+  ['Hanuman Sadhana & Naamjap with Vidhi', 1126],
+  ['Voice Activation for Inner Clarity', 970],
+  ['Heal Your Core Wound: Reclaim Your Power from Past', 729],
+  ['Restore Your Gut Energy Flow', 615],
+  ['Ancestral Healing: Break Lineage Patterns', 529],
+  ['Align Your Intentions with 11/11 Portal', 504],
+  ['Healing The Money Wound', 502],
+  ['Karma', 461],
+  ['Cords and Cleansing Ritual', 461],
+  ['Let It Go: A Journey to Forgiveness & Inner Freedom', 428],
+];
+
+const topOneOnOneData = [
+  ['Tarot Card Reading', 374],
+  ['Psychic Tarot Card Reading', 248],
+  ['Akashic Record Reading', 180],
+  ['Soul Purpose Plan', 170],
+  ['Birth Chart Analysis', 167],
+  ['Karmic & Spiritual Healing Plan', 118],
+  ['Animal Telepathy', 113],
+  ['Angel Guidance', 108],
+  ['Release Anxiety with Breathwork', 97],
+  ['Reiki Healing', 48],
+  ['Wrist Watch Astrology', 46],
+  ['Connect With Your Spirit Team', 44],
+  ['Intuitive Psychic Reading', 42],
+  ['Psychic Reading', 40],
+  ['Akashic Records Readings', 38],
+];
+
+const overlapCourseThemes = [
+  { name: 'Healing', count: 1077, color: '#f472b6' },
+  { name: 'Manifestation', count: 670, color: '#fbbf24' },
+  { name: 'Other', count: 543, color: '#4b5563' },
+  { name: 'Spirituality', count: 357, color: '#fb923c' },
+  { name: 'Psychic', count: 322, color: '#60a5fa' },
+  { name: 'Meditation', count: 287, color: '#a78bfa' },
+];
+
+const overlapOneThemes = [
+  { name: 'Psychic', count: 560, color: '#60a5fa' },
+  { name: 'Healing', count: 216, color: '#f472b6' },
+  { name: 'Astrology', count: 127, color: '#34d399' },
+  { name: 'Other', count: 68, color: '#4b5563' },
+  { name: 'Meditation', count: 38, color: '#a78bfa' },
+  { name: 'Animal', count: 21, color: '#fb923c' },
+];
+
+function renderThemes(id, data) {
+  const el = document.getElementById(id);
+  const max = Math.max(...data.map(d => d.count));
+  el.innerHTML = data.map(d => `
+    <div class="theme-bubble" style="border-color:${d.color}33">
+      <div class="t-icon">${d.icon}</div>
+      <div class="t-name">${d.name}</div>
+      <div class="t-count" style="color:${d.color}">${d.count.toLocaleString()}</div>
+      <div class="t-pct">${((d.count/max)*100).toFixed(0)}% of top</div>
+    </div>`).join('');
+}
+
+function renderBars(id, data, color) {
+  const el = document.getElementById(id);
+  const max = data[0][1];
+  el.innerHTML = data.map(([name, count]) => `
+    <div class="bar-item">
+      <div class="bar-meta">
+        <span class="bar-name" title="${name}">${name}</span>
+        <span class="bar-count">${count.toLocaleString()}</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${(count/max*100).toFixed(1)}%;background:${color}"></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderSimpleBars(id, data) {
+  const el = document.getElementById(id);
+  const max = data[0].count;
+  el.innerHTML = data.map(d => `
+    <div class="bar-item">
+      <div class="bar-meta">
+        <span class="bar-name">${d.name}</span>
+        <span class="bar-count">${d.count.toLocaleString()}</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${(d.count/max*100).toFixed(1)}%;background:${d.color}"></div>
+      </div>
+    </div>`).join('');
+}
+
+renderThemes('courseThemes', courseThemeData);
+renderThemes('oneThemes', oneThemeData);
+renderBars('topCourses', topCoursesData, '#a78bfa');
+renderBars('topOneOnOne', topOneOnOneData, '#34d399');
+renderSimpleBars('overlapCourses', overlapCourseThemes);
+renderSimpleBars('overlapOne', overlapOneThemes);
+</script>
+</body>
+</html>
