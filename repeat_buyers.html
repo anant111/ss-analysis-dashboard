@@ -102,6 +102,38 @@
   .chip { font-size: 11px; padding: 3px 9px; border-radius: 99px; background: #1a1a24; color: #a0a0b8; border: 1px solid #2a2a3a; }
 
   hr.divider { border: none; border-top: 1px solid #2a2a3a; margin: 6px 0 18px; }
+
+  /* Topic behavior section */
+  .behavior-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media(max-width:860px){ .behavior-grid { grid-template-columns: 1fr; } }
+
+  .behavior-card { background: #252530; border-radius: 12px; padding: 18px; text-align: center; border: 1px solid #3a3a4a; }
+  .behavior-card .bc-pct { font-size: 42px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .behavior-card .bc-title { font-size: 13px; font-weight: 600; color: #e8e8f0; margin-bottom: 6px; }
+  .behavior-card .bc-desc { font-size: 11px; color: #6b7280; line-height: 1.55; }
+
+  /* Stay vs expand per theme */
+  .stay-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .stay-table th { font-size: 10px; color: #4b5563; text-transform: uppercase; letter-spacing: .06em; padding: 0 8px 10px 0; font-weight: 600; text-align: left; }
+  .stay-table td { padding: 7px 8px 7px 0; border-top: 1px solid #252530; color: #9ca3af; vertical-align: middle; }
+  .stay-table td:first-child { color: #e8e8f0; font-weight: 500; }
+  .stay-rate-wrap { display: flex; align-items: center; gap: 6px; }
+  .stay-rate-bar { height: 8px; border-radius: 3px; flex-shrink: 0; }
+  .stay-rate-val { font-size: 11px; font-variant-numeric: tabular-nums; }
+
+  /* Theme combo matrix */
+  .combo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+  .combo-card { background: #252530; border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; }
+  .combo-count-big { font-size: 22px; font-weight: 800; flex-shrink: 0; width: 54px; text-align: center; }
+  .combo-info {}
+  .combo-pair { font-size: 12px; color: #e8e8f0; font-weight: 500; margin-bottom: 2px; }
+  .combo-sub { font-size: 11px; color: #6b7280; }
+
+  /* 1on1 behavior */
+  .one-behavior { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
+  .ob-stat { background: #252530; border-radius: 10px; padding: 14px 18px; }
+  .ob-val { font-size: 26px; font-weight: 700; margin-bottom: 2px; }
+  .ob-label { font-size: 11px; color: #6b7280; }
 </style>
 </head>
 <body>
@@ -244,6 +276,50 @@
       <div style="margin-top:14px;font-size:12px;color:#9ca3af;line-height:1.55">
         <strong style="color:#e8e8f0">62.8% of multi-session users also buy courses</strong> — the most engaged cross-channel segment on the platform. They've found a practitioner they trust and return repeatedly. Psychic & Divination and Healing split nearly equally at this tier, unlike lower session counts where Psychic dominates.
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Topic repeat behaviour overview -->
+<div class="panel full" style="margin-bottom:20px">
+  <div class="panel-title">Same Topic or New Territory? — Courses</div>
+  <p style="font-size:12px;color:#6b7280;margin-bottom:18px">Among 9,663 multi-course buyers: how many stay in the same theme vs. branch out?</p>
+  <div class="behavior-grid" id="behaviorCards"></div>
+</div>
+
+<!-- Stay rate by theme + theme combo grid side by side -->
+<div class="section-grid" style="margin-bottom:20px">
+  <div class="panel">
+    <div class="panel-title">Stay Rate by Theme <span class="tag tag-orange">% who only buy within that theme</span></div>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:14px">Manifestation has the highest loyalty (43%). Every other theme drives exploration.</p>
+    <table class="stay-table" id="stayTable"></table>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Most Common Theme Journeys — Courses <span class="tag tag-purple">Cross-theme buyers</span></div>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:14px">Top theme pairs purchased together by the same user.</p>
+    <div class="combo-grid" id="comboCourses"></div>
+  </div>
+</div>
+
+<!-- 1-on-1 topic behaviour -->
+<div class="panel full" style="margin-bottom:20px">
+  <div class="panel-title">Same Topic or New Territory? — 1-on-1 Sessions</div>
+  <div class="one-behavior">
+    <div class="ob-stat"><div class="ob-val pink">81.9%</div><div class="ob-label">of multi-session bookers cross themes</div></div>
+    <div class="ob-stat"><div class="ob-val teal">18.1%</div><div class="ob-label">stay in the same service theme</div></div>
+    <div class="ob-stat"><div class="ob-val amber">99.6%</div><div class="ob-label">of 5+ course power buyers are multi-theme</div></div>
+  </div>
+  <p style="font-size:12px;color:#6b7280;margin-bottom:14px">Top theme combinations booked in the same 1-on-1 journey:</p>
+  <div class="combo-grid" id="comboOne"></div>
+  <div class="insight-list" style="margin-top:16px">
+    <div class="insight-item" style="border-color:#f472b6">
+      <strong>81.9% of repeat 1-on-1 bookers cross themes.</strong> They don't keep returning for the same type of reading — they start with Psychic/Tarot and evolve into Healing or Astrology. This signals a deepening journey, not just repeat satisfaction with one service.
+    </div>
+    <div class="insight-item" style="border-color:#60a5fa">
+      <strong>Psychic → Healing is the dominant cross-theme journey (121 users).</strong> Users who start with tarot readings eventually book Akashic Records, Soul Purpose, or Karmic Healing sessions. The reading surfaces awareness; the healing session addresses it.
+    </div>
+    <div class="insight-item" style="border-color:#34d399">
+      <strong>Astrology pairs with both Psychic (51) and Healing (48).</strong> Astrology acts as a bridge service — users seek their chart reading, then move either toward readings (psychic) or toward action (healing). It's a high-conversion pivot point.
     </div>
   </div>
 </div>
@@ -423,6 +499,92 @@ const moTopSessionsData = [
   ['Connect With Your Spirit Team', 19],
 ];
 
+// ---- Topic Behavior ----
+function renderTopicBehavior() {
+  const cards = [
+    { pct: '25.2%', title: 'Single-Theme Buyers', desc: '2,437 users buy only within one topic. Manifestation has the most loyal stayers (1,517) — nearly 2× more than Healing.', color: '#fbbf24' },
+    { pct: '47.7%', title: 'Dual-Theme Explorers', desc: '4,608 users branch into a second theme. Manifestation + Healing is by far the most common pairing (2,247 users — 23% of all multi-course buyers).', color: '#fb923c' },
+    { pct: '27.1%', title: 'Multi-Theme Journeyers', desc: '2,618 users buy across 3+ themes. Power users (5+ courses) are almost exclusively here — 99.6% of them span multiple themes.', color: '#a78bfa' },
+  ];
+  document.getElementById('behaviorCards').innerHTML = cards.map(c => `
+    <div class="behavior-card">
+      <div class="bc-pct" style="color:${c.color}">${c.pct}</div>
+      <div class="bc-title">${c.title}</div>
+      <div class="bc-desc">${c.desc}</div>
+    </div>`).join('');
+}
+
+function renderThemeCombos() {
+  // Stay rate table
+  const stayData = [
+    { theme: 'Manifestation', stay: 1517, expand: 1976, color: '#fbbf24' },
+    { theme: 'Healing',       stay: 742,  expand: 2015, color: '#f472b6' },
+    { theme: 'Other',         stay: 75,   expand: 704,  color: '#4b5563' },
+    { theme: 'Spirituality',  stay: 62,   expand: 1003, color: '#fb923c' },
+    { theme: 'Meditation',    stay: 26,   expand: 467,  color: '#a78bfa' },
+    { theme: 'Psychic',       stay: 10,   expand: 616,  color: '#60a5fa' },
+    { theme: 'Astrology',     stay: 4,    expand: 401,  color: '#34d399' },
+  ];
+  const el = document.getElementById('stayTable');
+  el.innerHTML = `<tr><th>Theme</th><th>Stay rate</th><th>Stayers</th><th>Expanders</th></tr>` +
+    stayData.map(d => {
+      const pct = (d.stay/(d.stay+d.expand)*100).toFixed(0);
+      const barW = Math.max(4, parseInt(pct));
+      return `<tr>
+        <td>${d.theme}</td>
+        <td>
+          <div class="stay-rate-wrap">
+            <div class="stay-rate-bar" style="width:${barW*1.2}px;background:${d.color};opacity:.7"></div>
+            <span class="stay-rate-val" style="color:${d.color}">${pct}%</span>
+          </div>
+        </td>
+        <td style="color:#e8e8f0">${d.stay.toLocaleString()}</td>
+        <td style="color:#6b7280">${d.expand.toLocaleString()}</td>
+      </tr>`;
+    }).join('');
+
+  // Combo grid
+  const comboData = [
+    { count: 2247, a: 'Healing', b: 'Manifestation', note: 'Most common pairing — 23% of multi-course buyers', color: '#f472b6' },
+    { count: 1495, a: 'Manifestation', b: 'Spirituality', note: 'Devotional manifestation arc', color: '#fbbf24' },
+    { count: 1152, a: 'Healing', b: 'Spirituality', note: 'Soul-level healing + devotion', color: '#fb923c' },
+    { count: 1026, a: 'Healing', b: 'Psychic', note: 'Healing work draws psychic curiosity', color: '#60a5fa' },
+    { count: 968, a: 'Healing', b: 'Meditation', note: 'Body + soul recovery combo', color: '#a78bfa' },
+    { count: 909, a: 'Manifestation', b: 'Psychic', note: 'Manifestation seekers add divination', color: '#fbbf24' },
+    { count: 874, a: 'Manifestation', b: 'Meditation', note: 'Grounding manifestation in practice', color: '#2dd4bf' },
+    { count: 650, a: 'Astrology', b: 'Manifestation', note: 'Cosmic timing for manifestation', color: '#34d399' },
+  ];
+  document.getElementById('comboCourses').innerHTML = comboData.map(d => `
+    <div class="combo-card">
+      <div class="combo-count-big" style="color:${d.color}">${d.count.toLocaleString()}</div>
+      <div class="combo-info">
+        <div class="combo-pair">${d.a} + ${d.b}</div>
+        <div class="combo-sub">${d.note}</div>
+      </div>
+    </div>`).join('');
+}
+
+function render1on1Combos() {
+  const data = [
+    { count: 121, a: 'Psychic', b: 'Healing', note: 'Reading reveals → healing session follows', color: '#f472b6' },
+    { count: 51,  a: 'Astrology', b: 'Psychic', note: 'Chart reading + intuitive guidance', color: '#60a5fa' },
+    { count: 48,  a: 'Astrology', b: 'Healing', note: 'Cosmic map + soul healing', color: '#34d399' },
+    { count: 22,  a: 'Healing', b: 'Other', note: 'Healing + specialist services', color: '#fb923c' },
+    { count: 18,  a: 'Healing', b: 'Meditation', note: 'Healing supported by breathwork', color: '#a78bfa' },
+    { count: 16,  a: 'Psychic', b: 'Other', note: 'Psychic + niche services', color: '#6b7280' },
+    { count: 13,  a: 'Hypnotherapy', b: 'Psychic', note: 'Mind reprogramming + readings', color: '#e879f9' },
+    { count: 13,  a: 'Meditation', b: 'Psychic', note: 'Calm + clarity seeking', color: '#2dd4bf' },
+  ];
+  document.getElementById('comboOne').innerHTML = data.map(d => `
+    <div class="combo-card">
+      <div class="combo-count-big" style="color:${d.color}">${d.count}</div>
+      <div class="combo-info">
+        <div class="combo-pair">${d.a} + ${d.b}</div>
+        <div class="combo-sub">${d.note}</div>
+      </div>
+    </div>`).join('');
+}
+
 // Init
 renderFunnel('courseFunnel', courseFunnelData);
 renderFunnel('oneFunnel', oneFunnelData);
@@ -430,6 +592,9 @@ renderShiftTable();
 renderPairs();
 renderBars('mcTopCourses', mcTopCoursesData, '#fb923c');
 renderBars('moTopSessions', moTopSessionsData, '#f472b6');
+renderTopicBehavior();
+renderThemeCombos();
+render1on1Combos();
 </script>
 </body>
 </html>
