@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Repeat Buyer Analysis</title>
+<title>Repeat Buyer Analysis — Excl. Top Leaders</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f13; color: #e8e8f0; line-height: 1.6; padding: 24px; }
@@ -16,33 +16,36 @@
   .nav-divider { width: 1px; height: 24px; background: #2a2a3a; margin: 0 6px; }
 
   h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px;
-    background: linear-gradient(135deg, #fb923c, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    background: linear-gradient(135deg, #34d399, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 24px; }
 
-  /* KPI grid */
   .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; margin-bottom: 28px; }
   .stat-card { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 12px; padding: 18px; }
   .stat-card .label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
   .stat-card .value { font-size: 30px; font-weight: 700; }
   .stat-card .note { font-size: 11px; color: #6b7280; margin-top: 3px; }
 
+  .delta { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
+  .delta-down { background: #1a2a1a; color: #6ee7b7; }
+  .delta-up   { background: #2a1a2a; color: #c4b5fd; }
+  .delta-same { background: #1e2025; color: #6b7280; }
+
   .purple{color:#a78bfa} .blue{color:#60a5fa} .green{color:#34d399}
   .amber{color:#fbbf24} .pink{color:#f472b6} .orange{color:#fb923c} .teal{color:#2dd4bf}
 
-  /* Layout */
   .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
   @media(max-width:860px){ .section-grid { grid-template-columns: 1fr; } }
   .panel { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 12px; padding: 22px; }
   .panel.full { grid-column: 1/-1; }
   .panel-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 99px; }
+  .tag-green  { background: #052e16; color: #86efac; }
   .tag-orange { background: #431407; color: #fed7aa; }
   .tag-pink   { background: #500724; color: #fecdd3; }
   .tag-purple { background: #3b1f6e; color: #c4b5fd; }
   .tag-amber  { background: #451a03; color: #fcd34d; }
   .tag-blue   { background: #1e3a5f; color: #93c5fd; }
 
-  /* Bars */
   .bar-list { display: flex; flex-direction: column; gap: 9px; }
   .bar-meta { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
   .bar-name { color: #c7c7d9; max-width: 82%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -50,7 +53,6 @@
   .bar-track { background: #252530; border-radius: 4px; height: 6px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 4px; }
 
-  /* Funnel chart */
   .funnel { display: flex; flex-direction: column; gap: 8px; }
   .funnel-row { display: flex; align-items: center; gap: 12px; }
   .funnel-label { font-size: 12px; color: #9ca3af; width: 120px; flex-shrink: 0; text-align: right; }
@@ -58,29 +60,6 @@
   .funnel-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 600; color: #e8e8f0; white-space: nowrap; transition: width .4s; }
   .funnel-pct { font-size: 11px; color: #6b7280; width: 50px; text-align: right; flex-shrink: 0; }
 
-  /* Depth chart */
-  .depth-chart { display: flex; flex-direction: column; gap: 6px; }
-  .depth-row { display: flex; align-items: center; gap: 10px; }
-  .depth-label { font-size: 11px; color: #6b7280; width: 80px; flex-shrink: 0; }
-  .depth-bar-wrap { flex: 1; background: #252530; border-radius: 3px; height: 22px; overflow: hidden; position: relative; }
-  .depth-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 600; }
-  .depth-count { font-size: 11px; color: #6b7280; width: 60px; text-align: right; flex-shrink: 0; }
-
-  /* Pair cards */
-  .pair-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-  .pair-card { background: #252530; border-radius: 10px; padding: 14px; }
-  .pair-num { font-size: 11px; color: #4b5563; font-weight: 600; margin-bottom: 8px; }
-  .pair-items { display: flex; flex-direction: column; gap: 5px; }
-  .pair-item { font-size: 12px; color: #c7c7d9; padding: 5px 10px; background: #1a1a24; border-radius: 6px; }
-  .pair-count { font-size: 20px; font-weight: 700; color: #fb923c; margin-bottom: 4px; }
-  .pair-label { font-size: 10px; color: #6b7280; margin-bottom: 10px; }
-
-  /* Insight list */
-  .insight-list { display: flex; flex-direction: column; gap: 9px; }
-  .insight-item { background: #252530; border-left: 3px solid; border-radius: 0 8px 8px 0; padding: 11px 13px; font-size: 12px; color: #c7c7d9; line-height: 1.55; }
-  .insight-item strong { color: #e8e8f0; }
-
-  /* Theme shift table */
   .shift-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .shift-table th { text-align: left; font-size: 10px; color: #4b5563; text-transform: uppercase; letter-spacing: .06em; padding: 0 10px 10px 0; font-weight: 600; }
   .shift-table td { padding: 7px 10px 7px 0; border-top: 1px solid #252530; color: #9ca3af; vertical-align: middle; }
@@ -90,7 +69,17 @@
   .mini-bar-fill { height: 100%; border-radius: 3px; }
   .mini-val { font-size: 11px; color: #6b7280; width: 40px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 
-  /* Power user callout */
+  .pair-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .pair-card { background: #252530; border-radius: 10px; padding: 14px; }
+  .pair-count { font-size: 20px; font-weight: 700; color: #34d399; margin-bottom: 4px; }
+  .pair-label { font-size: 10px; color: #6b7280; margin-bottom: 10px; }
+  .pair-items { display: flex; flex-direction: column; gap: 5px; }
+  .pair-item { font-size: 12px; color: #c7c7d9; padding: 5px 10px; background: #1a1a24; border-radius: 6px; }
+
+  .insight-list { display: flex; flex-direction: column; gap: 9px; }
+  .insight-item { background: #252530; border-left: 3px solid; border-radius: 0 8px 8px 0; padding: 11px 13px; font-size: 12px; color: #c7c7d9; line-height: 1.55; }
+  .insight-item strong { color: #e8e8f0; }
+
   .power-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   @media(max-width:680px){ .power-row { grid-template-columns: 1fr; } }
   .power-card { background: #252530; border-radius: 10px; padding: 16px; border: 1px solid #3a3a4a; }
@@ -103,16 +92,13 @@
 
   hr.divider { border: none; border-top: 1px solid #2a2a3a; margin: 6px 0 18px; }
 
-  /* Topic behavior section */
   .behavior-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   @media(max-width:860px){ .behavior-grid { grid-template-columns: 1fr; } }
-
   .behavior-card { background: #252530; border-radius: 12px; padding: 18px; text-align: center; border: 1px solid #3a3a4a; }
   .behavior-card .bc-pct { font-size: 42px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
   .behavior-card .bc-title { font-size: 13px; font-weight: 600; color: #e8e8f0; margin-bottom: 6px; }
   .behavior-card .bc-desc { font-size: 11px; color: #6b7280; line-height: 1.55; }
 
-  /* Stay vs expand per theme */
   .stay-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .stay-table th { font-size: 10px; color: #4b5563; text-transform: uppercase; letter-spacing: .06em; padding: 0 8px 10px 0; font-weight: 600; text-align: left; }
   .stay-table td { padding: 7px 8px 7px 0; border-top: 1px solid #252530; color: #9ca3af; vertical-align: middle; }
@@ -121,19 +107,20 @@
   .stay-rate-bar { height: 8px; border-radius: 3px; flex-shrink: 0; }
   .stay-rate-val { font-size: 11px; font-variant-numeric: tabular-nums; }
 
-  /* Theme combo matrix */
   .combo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
   .combo-card { background: #252530; border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; }
   .combo-count-big { font-size: 22px; font-weight: 800; flex-shrink: 0; width: 54px; text-align: center; }
-  .combo-info {}
   .combo-pair { font-size: 12px; color: #e8e8f0; font-weight: 500; margin-bottom: 2px; }
   .combo-sub { font-size: 11px; color: #6b7280; }
 
-  /* 1on1 behavior */
   .one-behavior { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
   .ob-stat { background: #252530; border-radius: 10px; padding: 14px 18px; }
   .ob-val { font-size: 26px; font-weight: 700; margin-bottom: 2px; }
   .ob-label { font-size: 11px; color: #6b7280; }
+
+  /* Callout banner for key difference vs full paid */
+  .callout-banner { background: #0d2318; border: 1px solid #1a4a30; border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; font-size: 13px; color: #86efac; }
+  .callout-banner strong { color: #34d399; }
 </style>
 </head>
 <body>
@@ -147,82 +134,83 @@
   <a href="insights_no_leaders.html">Insights</a>
   <a href="personas_no_leaders.html">Personas</a>
   <div class="nav-divider"></div>
-  <a href="repeat_buyers.html" class="active">Repeat Buyers</a>
-  <a href="repeat_buyers_no_leaders.html">Repeat Buyers (Excl. Leaders)</a>
+  <a href="repeat_buyers.html">Repeat Buyers</a>
+  <a href="repeat_buyers_no_leaders.html" class="active">Repeat Buyers (Excl. Leaders)</a>
 </div>
 
-<h1>Repeat Buyer Analysis</h1>
-<p class="subtitle">Users who purchased more than 1 course OR booked more than 1 one-on-one session — source: Book1_paid.csv</p>
+<h1>Repeat Buyer Analysis — Excl. Top Leaders</h1>
+<p class="subtitle">Users who purchased more than 1 course OR booked more than 1 one-on-one session — source: Book3_removing_top_leaders.csv</p>
+
+<div class="callout-banner">
+  <strong>Key headline vs. full paid data:</strong> Removing top-leader courses drops repeat rate from 47.2% → 36.2%. Healing becomes the most loyal theme (25% stay rate), replacing Manifestation (43%). Co-purchase pairs shift from a single mega-bundle to organic healing &amp; devotional pairs. Healing leads at <em>every</em> course depth tier — the organic user base is fundamentally healing-driven.
+</div>
 
 <!-- KPIs -->
 <div class="stat-row">
   <div class="stat-card">
     <div class="label">Multi-Course Buyers</div>
-    <div class="value orange">9,663</div>
-    <div class="note">47.2% of all active paid</div>
+    <div class="value green">5,029<span class="delta delta-down">↓ vs 9,663</span></div>
+    <div class="note">36.2% of all active paid</div>
   </div>
   <div class="stat-card">
     <div class="label">Multi-Session Bookers</div>
-    <div class="value pink">309</div>
+    <div class="value pink">309<span class="delta delta-same">= same</span></div>
     <div class="note">16.1% of 1-on-1 users</div>
   </div>
   <div class="stat-card">
     <div class="label">Either Repeat</div>
-    <div class="value purple">9,814</div>
-    <div class="note">48.0% of all active paid</div>
+    <div class="value purple">5,209<span class="delta delta-down">↓ vs 9,814</span></div>
+    <div class="note">37.5% of all active paid</div>
   </div>
   <div class="stat-card">
     <div class="label">Both Multi</div>
-    <div class="value amber">158</div>
+    <div class="value amber">129<span class="delta delta-down">↓ vs 158</span></div>
     <div class="note">multi-course + multi-1on1</div>
   </div>
   <div class="stat-card">
     <div class="label">Power Course Buyers</div>
-    <div class="value teal">1,595</div>
+    <div class="value teal">706<span class="delta delta-down">↓ vs 1,595</span></div>
     <div class="note">5+ courses bought</div>
   </div>
   <div class="stat-card">
     <div class="label">Power Session Buyers</div>
-    <div class="value blue">98</div>
+    <div class="value blue">98<span class="delta delta-same">= same</span></div>
     <div class="note">3+ sessions booked</div>
   </div>
   <div class="stat-card">
     <div class="label">Max Courses by 1 User</div>
-    <div class="value pink">119</div>
+    <div class="value pink">111<span class="delta delta-down">↓ vs 119</span></div>
     <div class="note">single user record</div>
   </div>
   <div class="stat-card">
-    <div class="label">Avg Sessions (multi-1on1)</div>
-    <div class="value orange">2.7</div>
-    <div class="note">among repeat session bookers</div>
+    <div class="label">Multi-Course → 1-on-1</div>
+    <div class="value orange">7.7%<span class="delta delta-up">↑ vs 5.4%</span></div>
+    <div class="note">cross-channel upgrade rate</div>
   </div>
 </div>
 
 <!-- Funnel + depth -->
 <div class="section-grid">
-
   <div class="panel">
     <div class="panel-title">Course Purchase Depth Funnel</div>
     <div class="funnel" id="courseFunnel"></div>
   </div>
-
   <div class="panel">
     <div class="panel-title">1-on-1 Session Depth Funnel</div>
     <div class="funnel" id="oneFunnel"></div>
   </div>
-
 </div>
 
 <!-- Theme shift as depth increases -->
 <div class="panel full">
-  <div class="panel-title">How Buyer Themes Shift with Depth <span class="tag tag-orange">Course buyers</span></div>
-  <p style="font-size:12px;color:#6b7280;margin-bottom:18px">Top 3 themes at each course-count tier — as users buy more, Healing overtakes Manifestation.</p>
+  <div class="panel-title">How Buyer Themes Shift with Depth <span class="tag tag-green">Course buyers — excl. leaders</span></div>
+  <p style="font-size:12px;color:#6b7280;margin-bottom:18px">Top 3 themes at each course-count tier — <strong style="color:#34d399">Healing leads at every single tier</strong>, even from the first repeat purchase. Manifestation never takes the top spot.</p>
   <table class="shift-table" id="shiftTable"></table>
 </div>
 
 <!-- Top co-purchased pairs -->
 <div class="panel full">
-  <div class="panel-title">Top Course Co-Purchase Pairs <span class="tag tag-orange">Most frequent combos bought together</span></div>
+  <div class="panel-title">Top Course Co-Purchase Pairs <span class="tag tag-green">Organic healing &amp; devotional combos</span></div>
   <div class="pair-grid" id="pairGrid"></div>
 </div>
 
@@ -244,21 +232,21 @@
   <hr class="divider">
   <div class="power-row">
     <div class="power-card">
-      <div class="pc-icon">🔥</div>
+      <div class="pc-icon">🌿</div>
       <div class="pc-title">5+ Course Buyers</div>
-      <div class="pc-sub">Platform's highest-volume learners — buy across multiple themes</div>
-      <div class="pc-stat orange">1,595 users</div>
-      <div style="font-size:11px;color:#6b7280">7.8% of all active paid users</div>
+      <div class="pc-sub">The organic platform's deepest learners — almost exclusively healing-focused</div>
+      <div class="pc-stat green">706 users</div>
+      <div style="font-size:11px;color:#6b7280">5.1% of all active paid users</div>
       <div class="chip-list">
-        <span class="chip">Manifest Like A Millionaire</span>
-        <span class="chip">Energy Numbers & Visualisation</span>
-        <span class="chip">Connect with Guardian Angels</span>
-        <span class="chip">All About Karmic Relationships</span>
-        <span class="chip">Pyaar · Parivar</span>
-        <span class="chip">Align with 11/11 Portal</span>
+        <span class="chip">Karma</span>
+        <span class="chip">Cords and Cleansing Ritual</span>
+        <span class="chip">Hanuman Sadhana &amp; Naamjap with Vidhi</span>
+        <span class="chip">Voice Activation for Inner Clarity</span>
+        <span class="chip">Chant Gayatri Mantra</span>
+        <span class="chip">Breathe · Tap · Release</span>
       </div>
       <div style="margin-top:14px;font-size:12px;color:#9ca3af;line-height:1.55">
-        At 5+ courses, <strong style="color:#e8e8f0">Healing overtakes Manifestation</strong> as the #1 theme — power buyers evolve from outcome-seeking to deep inner work. They also have disproportionately high cross-theme breadth: manifestation, healing, spirituality, astrology, and meditation all feature.
+        <strong style="color:#e8e8f0">Healing dominates at every depth tier</strong> — these users are on a genuine therapeutic journey, not outcome-driven buying. Voice/Sound (445), Somatic tools (Breathe/Tap), and Spirituality (Hanuman, Gayatri) are the defining content pillars for this cohort.
       </div>
     </div>
     <div class="power-card">
@@ -272,10 +260,10 @@
         <span class="chip">Akashic Record Reading</span>
         <span class="chip">Birth Chart Analysis</span>
         <span class="chip">Soul Purpose Plan</span>
-        <span class="chip">Karmic & Spiritual Healing Plan</span>
+        <span class="chip">Karmic &amp; Spiritual Healing Plan</span>
       </div>
       <div style="margin-top:14px;font-size:12px;color:#9ca3af;line-height:1.55">
-        <strong style="color:#e8e8f0">62.8% of multi-session users also buy courses</strong> — the most engaged cross-channel segment on the platform. They've found a practitioner they trust and return repeatedly. Psychic & Divination and Healing split nearly equally at this tier, unlike lower session counts where Psychic dominates.
+        Identical to full paid data — the 1-on-1 ecosystem is unaffected by leader removal. <strong style="color:#e8e8f0">62%+ of multi-session users also buy courses</strong>. These are the highest-LTV users on the platform.
       </div>
     </div>
   </div>
@@ -284,20 +272,20 @@
 <!-- Topic repeat behaviour overview -->
 <div class="panel full" style="margin-bottom:20px">
   <div class="panel-title">Same Topic or New Territory? — Courses</div>
-  <p style="font-size:12px;color:#6b7280;margin-bottom:18px">Among 9,663 multi-course buyers: how many stay in the same theme vs. branch out?</p>
+  <p style="font-size:12px;color:#6b7280;margin-bottom:18px">Among 5,029 multi-course buyers: how many stay in the same theme vs. branch out?</p>
   <div class="behavior-grid" id="behaviorCards"></div>
 </div>
 
 <!-- Stay rate by theme + theme combo grid side by side -->
 <div class="section-grid" style="margin-bottom:20px">
   <div class="panel">
-    <div class="panel-title">Stay Rate by Theme <span class="tag tag-orange">% who only buy within that theme</span></div>
-    <p style="font-size:12px;color:#6b7280;margin-bottom:14px">Manifestation has the highest loyalty (43%). Every other theme drives exploration.</p>
+    <div class="panel-title">Stay Rate by Theme <span class="tag tag-green">% who only buy within that theme</span></div>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:14px"><strong style="color:#34d399">Healing now has the highest loyalty (25%)</strong>, replacing Manifestation which drops to 14%. Without the top-leader bundle effect, manifestation buyers spread across themes more freely.</p>
     <table class="stay-table" id="stayTable"></table>
   </div>
   <div class="panel">
     <div class="panel-title">Most Common Theme Journeys — Courses <span class="tag tag-purple">Cross-theme buyers</span></div>
-    <p style="font-size:12px;color:#6b7280;margin-bottom:14px">Top theme pairs purchased together by the same user.</p>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:14px">Top theme pairs purchased together by the same user. Healing appears in 7 of the top 8 pairs.</p>
     <div class="combo-grid" id="comboCourses"></div>
   </div>
 </div>
@@ -308,19 +296,19 @@
   <div class="one-behavior">
     <div class="ob-stat"><div class="ob-val pink">81.9%</div><div class="ob-label">of multi-session bookers cross themes</div></div>
     <div class="ob-stat"><div class="ob-val teal">18.1%</div><div class="ob-label">stay in the same service theme</div></div>
-    <div class="ob-stat"><div class="ob-val amber">99.6%</div><div class="ob-label">of 5+ course power buyers are multi-theme</div></div>
+    <div class="ob-stat"><div class="ob-val amber">7.7%</div><div class="ob-label">of multi-course users also book 1-on-1 ↑ from 5.4%</div></div>
   </div>
   <p style="font-size:12px;color:#6b7280;margin-bottom:14px">Top theme combinations booked in the same 1-on-1 journey:</p>
   <div class="combo-grid" id="comboOne"></div>
   <div class="insight-list" style="margin-top:16px">
     <div class="insight-item" style="border-color:#f472b6">
-      <strong>81.9% of repeat 1-on-1 bookers cross themes.</strong> They don't keep returning for the same type of reading — they start with Psychic/Tarot and evolve into Healing or Astrology. This signals a deepening journey, not just repeat satisfaction with one service.
+      <strong>81.9% of repeat 1-on-1 bookers cross themes — identical to full paid data.</strong> The 1-on-1 ecosystem is entirely organic and unaffected by leader course removal. Users start with Psychic/Tarot and evolve into Healing or Astrology — a deepening journey, not repetition.
     </div>
     <div class="insight-item" style="border-color:#60a5fa">
-      <strong>Psychic → Healing is the dominant cross-theme journey (121 users).</strong> Users who start with tarot readings eventually book Akashic Records, Soul Purpose, or Karmic Healing sessions. The reading surfaces awareness; the healing session addresses it.
+      <strong>Psychic → Healing is still the dominant cross-theme journey (102 users).</strong> Slight drop from 121 in full paid, but the pattern holds perfectly. The reading surfaces awareness; the healing session addresses it.
     </div>
     <div class="insight-item" style="border-color:#34d399">
-      <strong>Astrology pairs with both Psychic (51) and Healing (48).</strong> Astrology acts as a bridge service — users seek their chart reading, then move either toward readings (psychic) or toward action (healing). It's a high-conversion pivot point.
+      <strong>Higher cross-channel upgrade rate: 7.7% of multi-course users also book 1-on-1</strong> (vs. 5.4% in full paid). The healing-focused organic user is more likely to seek personal guidance — aligned with deeper inner work intent.
     </div>
   </div>
 </div>
@@ -330,20 +318,20 @@
   <div class="panel">
     <div class="panel-title">Course Repeat Buyer Insights</div>
     <div class="insight-list">
-      <div class="insight-item" style="border-color:#fb923c">
-        <strong>Nearly half of paid users buy more than 1 course.</strong> 47.2% (9,663) are multi-course buyers — this is an extremely healthy repeat rate. The platform's content breadth is driving sequential purchases, not just one-off attendance.
+      <div class="insight-item" style="border-color:#34d399">
+        <strong>Repeat rate drops from 47.2% to 36.2% without top leaders.</strong> The top-leader courses (Manifest Like A Millionaire, Energy Numbers) drove a significant chunk of multi-course buying through their bundled effect. The organic base still shows healthy repeat behavior — 36.2% is a strong rate for a spirituality platform.
       </div>
       <div class="insight-item" style="border-color:#fbbf24">
-        <strong>Manifestation leads at 2–4 courses; Healing takes over at 5+.</strong> Early buyers are drawn by outcome-driven manifestation content. As they deepen, they shift to healing and soul work. This is a clear content journey arc — each stage primes the next.
+        <strong>Healing leads at every depth tier — no exceptions.</strong> From 2 courses all the way to 5+, Healing is the #1 theme. This is a complete reversal from full paid data where Manifestation led at 2–4 courses. The organic buyer starts with and deepens into healing work.
       </div>
       <div class="insight-item" style="border-color:#a78bfa">
-        <strong>Strongest co-purchase pair: Energy Numbers + Manifest Like A Millionaire (2,786×).</strong> These two courses are bought together by every single buyer of either — they function as a bundle in practice. Formal bundling could reduce friction and increase this further.
-      </div>
-      <div class="insight-item" style="border-color:#34d399">
-        <strong>Devotional pairs are highly sticky.</strong> Pyaar + Parivar (396×), Chant Gayatri + Prosperity (390×), Paisa + Pyaar (339×) — culturally rooted course pairs have near-perfect co-purchase rates, suggesting a tight community around this content vertical.
+        <strong>Karma + Cords is the new top pair (460×).</strong> Without the mega-manifestation bundle, the #1 co-purchase is an organic karmic clearing double-pack. The top 8 pairs are all healing, devotional, or somatic — a clean picture of what users truly come back for.
       </div>
       <div class="insight-item" style="border-color:#60a5fa">
-        <strong>Multi-course users rarely upgrade to 1-on-1 (5.4%).</strong> Only 521 of 9,663 multi-course buyers also book a 1-on-1 session. There's a significant untapped upsell opportunity — the intent is there (they're engaged), but the bridge to personal sessions is missing.
+        <strong>Breathe + Tap + Release is a 3-way cluster (254× each pair).</strong> These three somatic/breathwork courses form a functional toolkit that users buy as a unit. Formal bundling could reduce friction and grow this cluster further.
+      </div>
+      <div class="insight-item" style="border-color:#fb923c">
+        <strong>Voice Activation (445) and Voice-based Tools (226) are power-buyer staples.</strong> The Voice/Sound theme is strongly over-represented among multi-course buyers vs. single-course buyers — suggesting it's a discovery category that hooks users into deeper content exploration.
       </div>
     </div>
   </div>
@@ -352,43 +340,42 @@
     <div class="panel-title">Session Repeat Buyer Insights</div>
     <div class="insight-list">
       <div class="insight-item" style="border-color:#f472b6">
-        <strong>Most 1-on-1 bookers stop at 1 session (83.9%).</strong> Only 309 of 1,920 book a second session. The main drop-off is after session 1 — better post-session follow-up flows could meaningfully increase this number.
+        <strong>1-on-1 behavior is virtually identical to full paid data.</strong> Session counts, funnel shape, top sessions, and cross-theme behavior are unchanged — confirming that top-leader removal only affects the course ecosystem, not the practitioner booking side.
       </div>
       <div class="insight-item" style="border-color:#60a5fa">
-        <strong>Multi-session users split Psychic and Healing equally.</strong> Among users booking 3+ sessions, Healing & Soul Work (281 bookings) nearly matches Psychic & Divination (316). This is a key shift from single-session users where Psychic dominates at 57% — deeper engagement moves users toward therapeutic healing work.
+        <strong>Healing overtakes Psychic at the Astrology crossover point.</strong> In this dataset, Astrology → Healing (37 combos) closes the gap with Astrology → Psychic (48), more so than in full paid. The Healing + Psychic combo (102) remains the top pair.
       </div>
       <div class="insight-item" style="border-color:#34d399">
-        <strong>62.8% of repeat session bookers also buy courses.</strong> This is the highest cross-channel overlap on the platform. Repeat 1-on-1 buyers are the most engaged, highest-LTV users — they should be prioritised in retention and course recommendation flows.
+        <strong>7.7% of multi-course buyers also book 1-on-1 (up from 5.4%).</strong> Among 5,029 multi-course buyers, 385 also book a 1-on-1 session. The healing-focused cohort is more likely to bridge to personal sessions — the upsell path is more naturally accessible here.
       </div>
       <div class="insight-item" style="border-color:#2dd4bf">
-        <strong>Birth Chart Analysis is a repeat-booking magnet.</strong> 70 bookings among just 309 multi-session users — buyers return annually for transit readings and life stage updates. This is the most natural subscription service on the platform.
+        <strong>Birth Chart Analysis remains a repeat-booking magnet.</strong> 70 bookings among 309 multi-session users — the annual transit reading pattern holds strong. Natural subscription opportunity.
       </div>
-      <div class="insight-item" style="border-color:#fb923c">
-        <strong>1 user booked 12 sessions; another 11.</strong> The top 5 multi-session users each averaged 9+ sessions. These are de facto ongoing clients with specific practitioners — a membership or retainer model would formalise and protect this revenue.
+      <div class="insight-item" style="border-color:#e879f9">
+        <strong>Hypnotherapy + Psychic combo (18) appears prominently.</strong> More visible in this dataset than full paid — users seeking mind reprogramming (hypnotherapy) pair it with psychic readings. An emerging cross-service journey worth watching.
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// Funnel data
 const courseFunnelData = [
-  { label: '1 course', count: 9587, pct: 100, color: '#fb923c33' },
-  { label: '2 courses', count: 4951, pct: 51.6, color: '#fb923c55' },
-  { label: '3 courses', count: 2049, pct: 21.4, color: '#fb923c77' },
-  { label: '4 courses', count: 1068, pct: 11.1, color: '#fb923c99' },
-  { label: '5–9 courses', count: 1071, pct: 11.2, color: '#fb923cbb' },
-  { label: '10–19 courses', count: 257, pct: 2.7, color: '#fb923cdd' },
-  { label: '20+ courses', count: 66, pct: 0.7, color: '#fb923c' },
+  { label: '1 course',      count: 7546, pct: 100,  color: '#34d39933' },
+  { label: '2 courses',     count: 2725, pct: 36.1, color: '#34d39955' },
+  { label: '3 courses',     count: 1092, pct: 14.5, color: '#34d39977' },
+  { label: '4 courses',     count: 506,  pct: 6.7,  color: '#34d39999' },
+  { label: '5–9 courses',   count: 529,  pct: 7.0,  color: '#34d399bb' },
+  { label: '10–19 courses', count: 130,  pct: 1.7,  color: '#34d399dd' },
+  { label: '20+ courses',   count: 47,   pct: 0.6,  color: '#34d399' },
 ];
 
 const oneFunnelData = [
-  { label: '1 session', count: 1611, pct: 100, color: '#f472b633' },
-  { label: '2 sessions', count: 211, pct: 13.1, color: '#f472b666' },
-  { label: '3 sessions', count: 54,  pct: 3.4,  color: '#f472b699' },
-  { label: '4 sessions', count: 17,  pct: 1.1,  color: '#f472b6bb' },
-  { label: '5–6 sessions', count: 18, pct: 1.1, color: '#f472b6cc' },
-  { label: '7+ sessions', count: 9,  pct: 0.6,  color: '#f472b6' },
+  { label: '1 session',   count: 1612, pct: 100, color: '#f472b633' },
+  { label: '2 sessions',  count: 211,  pct: 13.1, color: '#f472b666' },
+  { label: '3 sessions',  count: 54,   pct: 3.4,  color: '#f472b699' },
+  { label: '4 sessions',  count: 17,   pct: 1.1,  color: '#f472b6bb' },
+  { label: '5–6 sessions',count: 18,   pct: 1.1,  color: '#f472b6cc' },
+  { label: '7+ sessions', count: 9,    pct: 0.6,  color: '#f472b6' },
 ];
 
 function renderFunnel(id, data) {
@@ -406,12 +393,11 @@ function renderFunnel(id, data) {
   `).join('');
 }
 
-// Theme shift table
 const shiftData = [
-  { tier: '2 courses (4,951)', themes: [['Manifestation', 3884, '#fbbf24'], ['Healing', 2587, '#f472b6'], ['Spirituality', 839, '#fb923c']] },
-  { tier: '3 courses (2,049)', themes: [['Manifestation', 2085, '#fbbf24'], ['Healing', 1556, '#f472b6'], ['Other', 779, '#4b5563']] },
-  { tier: '4 courses (1,068)', themes: [['Manifestation', 1433, '#fbbf24'], ['Healing', 974, '#f472b6'], ['Spirituality', 619, '#fb923c']] },
-  { tier: '5+ courses (1,595)', themes: [['Healing', 3963, '#f472b6'], ['Manifestation', 3569, '#fbbf24'], ['Other', 1739, '#4b5563']] },
+  { tier: '2 courses (2,725)', themes: [['Healing', 2033, '#34d399'], ['Manifestation', 1047, '#fbbf24'], ['Other', 900, '#4b5563']] },
+  { tier: '3 courses (1,092)', themes: [['Healing', 1414, '#34d399'], ['Other', 574, '#4b5563'],        ['Manifestation', 543, '#fbbf24']] },
+  { tier: '4 courses (506)',   themes: [['Healing', 763, '#34d399'],  ['Other', 378, '#4b5563'],        ['Manifestation', 354, '#fbbf24']] },
+  { tier: '5+ courses (706)',  themes: [['Healing', 2471, '#34d399'], ['Other', 1391, '#4b5563'],       ['Manifestation', 1115, '#fbbf24']] },
 ];
 
 function renderShiftTable() {
@@ -433,21 +419,20 @@ function renderShiftTable() {
   el.innerHTML = header + rows;
 }
 
-// Co-purchase pairs
 const pairData = [
-  { count: 2786, items: ['Manifest Like A Millionaire: Attract Wealth With Crystals', 'Energy Numbers & Visualisation'], note: 'Always bought together — de facto bundle' },
-  { count: 461,  items: ['Karma', 'Cords and Cleansing Ritual'], note: 'Karmic clearing double-pack' },
-  { count: 433,  items: ['Connect with Guardian Angels', 'Manifest Like A Millionaire: Attract Wealth With Crystals'], note: 'Angelic manifestation combo' },
-  { count: 433,  items: ['Connect with Guardian Angels', 'Energy Numbers & Visualisation'], note: 'Angelic + numerology pair' },
-  { count: 396,  items: ['Pyaar', 'Parivar'], note: 'Love & Family — bought as a unit' },
-  { count: 390,  items: ['Chant Gayatri Mantra Together for Clarity', 'Prosperity & Inner Strength'], note: 'Devotional prosperity pair' },
-  { count: 339,  items: ['Paisa - Teen Kahaniya', 'Pyaar'], note: 'Money + Love thematic arc' },
-  { count: 339,  items: ['Ek Wiring!', 'Parivar'], note: 'Rewiring + Family healing' },
+  { count: 460, items: ['Karma', 'Cords and Cleansing Ritual'], note: 'Karmic clearing double-pack — organic top pair' },
+  { count: 390, items: ['Chant Gayatri Mantra Together for Clarity', 'Prosperity & Inner Strength'], note: 'Devotional prosperity pair' },
+  { count: 254, items: ['Breathe', 'Release: A Stress Reset Program', 'Tap'], note: 'Somatic 3-way cluster — bought as toolkit' },
+  { count: 204, items: ['Daily SoulSync: Small Steps', 'Soulful Shifts'], note: 'Daily practice companion pair' },
+  { count: 88,  items: ['Shame & Guilt from the Womb', 'Shodhan: Gracefully Release Anger'], note: 'Deep emotional release pair' },
+  { count: 85,  items: ['Healing The Money Wound: Starter Kit', 'Mastering Daily Joy with Mindfulness'], note: 'Money healing + daily practice' },
+  { count: 76,  items: ['Restore Your Gut Energy Flow', 'Voice-based Tools for Nervous Balance'], note: 'Somatic body-mind reset' },
+  { count: 70,  items: ['Healing The Mother Wound', 'Wholeness & Freedom'], note: 'Deep ancestral healing pair' },
 ];
 
 function renderPairs() {
   const el = document.getElementById('pairGrid');
-  el.innerHTML = pairData.map((p, i) => `
+  el.innerHTML = pairData.map(p => `
     <div class="pair-card">
       <div class="pair-count">${p.count.toLocaleString()}×</div>
       <div class="pair-label">bought together · ${p.note}</div>
@@ -458,7 +443,6 @@ function renderPairs() {
   `).join('');
 }
 
-// Top courses / sessions
 function renderBars(id, data, color) {
   const el = document.getElementById(id);
   const max = data[0][1];
@@ -470,21 +454,21 @@ function renderBars(id, data, color) {
 }
 
 const mcTopCoursesData = [
-  ['Manifest Like A Millionaire: Attract Wealth With Crystals', 2786],
-  ['Energy Numbers & Visualisation', 2786],
-  ['Connect with Your Guardian Angels', 1483],
-  ['All About Karmic Relationships', 650],
-  ['Hanuman Sadhana & Naamjap with Vidhi', 595],
-  ['Manifesting Love: A Journey to Heal and Attract', 563],
-  ['Heal Your Core Wound: Reclaim Your Power from the Past', 480],
-  ['Voice Activation for Inner Clarity', 472],
-  ['Karma', 461],
-  ['Cords and Cleansing Ritual', 461],
+  ['Hanuman Sadhana & Naamjap with Vidhi', 531],
+  ['Karma', 460],
+  ['Cords and Cleansing Ritual', 460],
+  ['Voice Activation for Inner Clarity', 445],
   ['Chant Gayatri Mantra Together for Clarity', 390],
   ['Prosperity & Inner Strength', 390],
-  ['Pyaar', 386],
-  ['Parivar', 386],
-  ['Ancestral Healing: Break Lineage Patterns', 384],
+  ['Healing The Money Wound: A Starter Kit', 263],
+  ['Breathe', 254],
+  ['Tap', 254],
+  ['Release: A Stress Reset Program', 254],
+  ['Restore Your Gut Energy Flow', 244],
+  ['Voice-based Tools for Nervous Balance', 226],
+  ['Daily SoulSync: Small Steps', 204],
+  ['Soulful Shifts', 204],
+  ['Breathe With Prameet: Recharge & Relieve Stress', 151],
 ];
 
 const moTopSessionsData = [
@@ -500,12 +484,11 @@ const moTopSessionsData = [
   ['Connect With Your Spirit Team', 19],
 ];
 
-// ---- Topic Behavior ----
 function renderTopicBehavior() {
   const cards = [
-    { pct: '25.2%', title: 'Single-Theme Buyers', desc: '2,437 users buy only within one topic. Manifestation has the most loyal stayers (1,517) — nearly 2× more than Healing.', color: '#fbbf24' },
-    { pct: '47.7%', title: 'Dual-Theme Explorers', desc: '4,608 users branch into a second theme. Manifestation + Healing is by far the most common pairing (2,247 users — 23% of all multi-course buyers).', color: '#fb923c' },
-    { pct: '27.1%', title: 'Multi-Theme Journeyers', desc: '2,618 users buy across 3+ themes. Power users (5+ courses) are almost exclusively here — 99.6% of them span multiple themes.', color: '#a78bfa' },
+    { pct: '26.8%', title: 'Single-Theme Buyers', desc: '1,348 users buy only within one topic. Healing has the most loyal stayers (829) — but at a lower rate than Manifestation in full paid data (1,517).', color: '#34d399' },
+    { pct: '49.2%', title: 'Dual-Theme Explorers', desc: '2,476 users branch into a second theme. Healing + Other (1,181) and Healing + Manifestation (1,007) are the top pairings — both Healing-led.', color: '#60a5fa' },
+    { pct: '24.0%', title: 'Multi-Theme Journeyers', desc: '1,205 users buy across 3+ themes. Power users (5+ courses) are almost exclusively here — the deep healing journey naturally spans multiple related categories.', color: '#a78bfa' },
   ];
   document.getElementById('behaviorCards').innerHTML = cards.map(c => `
     <div class="behavior-card">
@@ -516,15 +499,14 @@ function renderTopicBehavior() {
 }
 
 function renderThemeCombos() {
-  // Stay rate table
   const stayData = [
-    { theme: 'Manifestation', stay: 1517, expand: 1976, color: '#fbbf24' },
-    { theme: 'Healing',       stay: 742,  expand: 2015, color: '#f472b6' },
-    { theme: 'Other',         stay: 75,   expand: 704,  color: '#4b5563' },
-    { theme: 'Spirituality',  stay: 62,   expand: 1003, color: '#fb923c' },
-    { theme: 'Meditation',    stay: 26,   expand: 467,  color: '#a78bfa' },
-    { theme: 'Psychic',       stay: 10,   expand: 616,  color: '#60a5fa' },
-    { theme: 'Astrology',     stay: 4,    expand: 401,  color: '#34d399' },
+    { theme: 'Healing',       stay: 829, expand: 2532, color: '#34d399' },
+    { theme: 'Manifestation', stay: 268, expand: 1662, color: '#fbbf24' },
+    { theme: 'Spirituality',  stay: 125, expand: 1153, color: '#fb923c' },
+    { theme: 'Other',         stay: 116, expand: 1865, color: '#4b5563' },
+    { theme: 'Meditation',    stay: 8,   expand: 805,  color: '#a78bfa' },
+    { theme: 'Psychic',       stay: 1,   expand: 323,  color: '#60a5fa' },
+    { theme: 'Voice/Sound',   stay: 1,   expand: 711,  color: '#2dd4bf' },
   ];
   const el = document.getElementById('stayTable');
   el.innerHTML = `<tr><th>Theme</th><th>Stay rate</th><th>Stayers</th><th>Expanders</th></tr>` +
@@ -535,7 +517,7 @@ function renderThemeCombos() {
         <td>${d.theme}</td>
         <td>
           <div class="stay-rate-wrap">
-            <div class="stay-rate-bar" style="width:${barW*1.2}px;background:${d.color};opacity:.7"></div>
+            <div class="stay-rate-bar" style="width:${barW*1.8}px;background:${d.color};opacity:.7"></div>
             <span class="stay-rate-val" style="color:${d.color}">${pct}%</span>
           </div>
         </td>
@@ -544,16 +526,15 @@ function renderThemeCombos() {
       </tr>`;
     }).join('');
 
-  // Combo grid
   const comboData = [
-    { count: 2247, a: 'Healing', b: 'Manifestation', note: 'Most common pairing — 23% of multi-course buyers', color: '#f472b6' },
-    { count: 1495, a: 'Manifestation', b: 'Spirituality', note: 'Devotional manifestation arc', color: '#fbbf24' },
-    { count: 1152, a: 'Healing', b: 'Spirituality', note: 'Soul-level healing + devotion', color: '#fb923c' },
-    { count: 1026, a: 'Healing', b: 'Psychic', note: 'Healing work draws psychic curiosity', color: '#60a5fa' },
-    { count: 968, a: 'Healing', b: 'Meditation', note: 'Body + soul recovery combo', color: '#a78bfa' },
-    { count: 909, a: 'Manifestation', b: 'Psychic', note: 'Manifestation seekers add divination', color: '#fbbf24' },
-    { count: 874, a: 'Manifestation', b: 'Meditation', note: 'Grounding manifestation in practice', color: '#2dd4bf' },
-    { count: 650, a: 'Astrology', b: 'Manifestation', note: 'Cosmic timing for manifestation', color: '#34d399' },
+    { count: 1181, a: 'Healing', b: 'Other',         note: 'Healing draws niche specialist content', color: '#34d399' },
+    { count: 1007, a: 'Healing', b: 'Manifestation', note: 'Therapeutic healing + outcome work', color: '#f472b6' },
+    { count: 797,  a: 'Manifestation', b: 'Other',   note: 'Outcome-seeking meets niche content', color: '#fbbf24' },
+    { count: 696,  a: 'Healing', b: 'Spirituality',  note: 'Soul-level healing + devotional practice', color: '#fb923c' },
+    { count: 488,  a: 'Healing', b: 'Meditation',    note: 'Body + mind recovery combo', color: '#a78bfa' },
+    { count: 477,  a: 'Healing', b: 'Voice/Sound',   note: 'Somatic healing + voice activation', color: '#2dd4bf' },
+    { count: 476,  a: 'Other',   b: 'Spirituality',  note: 'Niche devotional + spiritual journeys', color: '#4b5563' },
+    { count: 448,  a: 'Manifestation', b: 'Spirituality', note: 'Devotional manifestation arc', color: '#fbbf24' },
   ];
   document.getElementById('comboCourses').innerHTML = comboData.map(d => `
     <div class="combo-card">
@@ -567,14 +548,14 @@ function renderThemeCombos() {
 
 function render1on1Combos() {
   const data = [
-    { count: 121, a: 'Psychic', b: 'Healing', note: 'Reading reveals → healing session follows', color: '#f472b6' },
-    { count: 51,  a: 'Astrology', b: 'Psychic', note: 'Chart reading + intuitive guidance', color: '#60a5fa' },
-    { count: 48,  a: 'Astrology', b: 'Healing', note: 'Cosmic map + soul healing', color: '#34d399' },
-    { count: 22,  a: 'Healing', b: 'Other', note: 'Healing + specialist services', color: '#fb923c' },
-    { count: 18,  a: 'Healing', b: 'Meditation', note: 'Healing supported by breathwork', color: '#a78bfa' },
-    { count: 16,  a: 'Psychic', b: 'Other', note: 'Psychic + niche services', color: '#6b7280' },
-    { count: 13,  a: 'Hypnotherapy', b: 'Psychic', note: 'Mind reprogramming + readings', color: '#e879f9' },
-    { count: 13,  a: 'Meditation', b: 'Psychic', note: 'Calm + clarity seeking', color: '#2dd4bf' },
+    { count: 102, a: 'Psychic', b: 'Healing',       note: 'Reading reveals → healing session follows', color: '#f472b6' },
+    { count: 48,  a: 'Astrology', b: 'Psychic',     note: 'Chart reading + intuitive guidance', color: '#60a5fa' },
+    { count: 37,  a: 'Astrology', b: 'Healing',     note: 'Cosmic map + soul healing', color: '#34d399' },
+    { count: 36,  a: 'Psychic', b: 'Spirituality',  note: 'Readings + devotional practice', color: '#a78bfa' },
+    { count: 30,  a: 'Healing', b: 'Spirituality',  note: 'Healing anchored in devotion', color: '#fb923c' },
+    { count: 30,  a: 'Healing', b: 'Other',         note: 'Healing + specialist services', color: '#fbbf24' },
+    { count: 23,  a: 'Other', b: 'Psychic',         note: 'Niche + psychic guidance', color: '#6b7280' },
+    { count: 18,  a: 'Hypnotherapy', b: 'Psychic',  note: 'Mind reprogramming + readings', color: '#e879f9' },
   ];
   document.getElementById('comboOne').innerHTML = data.map(d => `
     <div class="combo-card">
@@ -586,12 +567,11 @@ function render1on1Combos() {
     </div>`).join('');
 }
 
-// Init
 renderFunnel('courseFunnel', courseFunnelData);
 renderFunnel('oneFunnel', oneFunnelData);
 renderShiftTable();
 renderPairs();
-renderBars('mcTopCourses', mcTopCoursesData, '#fb923c');
+renderBars('mcTopCourses', mcTopCoursesData, '#34d399');
 renderBars('moTopSessions', moTopSessionsData, '#f472b6');
 renderTopicBehavior();
 renderThemeCombos();
